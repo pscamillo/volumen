@@ -174,8 +174,10 @@ def fetch_mesh(u: Unit, cache: core.Cache,
         if os.path.isfile(p) and os.path.getsize(p) > 0:
             continue
         data = _get(f"{GH_RAW}/{u.mesh_rel}/{name}")
-        with open(p, "wb") as f:
+        # write beside, then rename: a reader never sees a half file (23/09)
+        with open(p + ".part", "wb") as f:
             f.write(data)
+        os.replace(p + ".part", p)
         if progress:
             progress(i, len(MESH_FILES))
     u.mesh_dir = d
@@ -194,12 +196,17 @@ def fetch_ink(u: Unit, cache: core.Cache, direction: str = "forward",
     p = cache.path("public", "ink", name)
     if os.path.isfile(p) and os.path.getsize(p) > 0:
         return p
+    # download beside the final name and rename at the end: a second
+    # reader either finds the whole file or nothing. Seen on 23/09 in a
+    # fresh HOME — the layer was read while the download was still writing
+    # ("corrupted tile ... cannot be reshaped from (3403,)").
+    part = p + ".part"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Volumen"})
         with urllib.request.urlopen(req, timeout=300) as r:
             total = int(r.headers.get("Content-Length") or 0)
             got = 0
-            with open(p, "wb") as f:
+            with open(part, "wb") as f:
                 while True:
                     block = r.read(1 << 18)
                     if not block:
@@ -208,9 +215,12 @@ def fetch_ink(u: Unit, cache: core.Cache, direction: str = "forward",
                     got += len(block)
                     if progress and total:
                         progress(got, total)
-    except urllib.error.URLError:
-        if os.path.isfile(p):
-            os.remove(p)
+        if total and got != total:
+            raise urllib.error.URLError(f"short read {got} of {total}")
+        os.replace(part, p)
+    except (urllib.error.URLError, OSError):
+        if os.path.isfile(part):
+            os.remove(part)
         return None
     return p
 
