@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+volumen.log
+*.pre_*
+*.bak
+uv.lock

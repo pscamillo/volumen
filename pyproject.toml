@@ -1,0 +1,22 @@
+[project]
+name = "volumen"
+version = "0.1.0"
+description = "A workbench for the Herculaneum scroll surfaces: open, flatten, cut, judge."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Paulo Sergio Camillo" }]
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "pyside6>=6.6",
+    "zarr>=2.16,<3",
+    "fsspec",
+    "aiohttp",
+    "requests",
+    "numpy",
+    "tifffile",
+    "imagecodecs",
+    "pillow",
+]
+
+[tool.uv]
+package = false
