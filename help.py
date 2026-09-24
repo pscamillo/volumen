@@ -35,7 +35,11 @@ GROUPS = [
          "<b>Fibre gate</b>, the surface view with its cuts, and "
          "<b>Progress</b> are its steps. It fits surfaces but never traces or "
          f"edits them by hand — that, and much more, is {a(VC3D, 'VC3D')}, "
-         "and any surface here can be exported to it as a ready-made project."),
+         "and any surface here can be exported to it as a ready-made project. "
+         "Everything but <i>making</i> surfaces runs on any computer with "
+         "Python: the flattened view is made here, from the CT, without "
+         "VC3D. Making surfaces is the optional step, and needs the pipeline "
+         "described under <i>Make surfaces</i>."),
     ]),
 
     ("Using the app", [
@@ -45,8 +49,11 @@ GROUPS = [
          "judged for ink and how many went through the gate. Dimmed cards "
          "have nothing yet, in three shades: the lightest only needs the "
          "pipeline run, the middle needs the geometric route's inputs "
-         "first, the darkest has no tracks published at all. Click a bright "
-         "card to open its surfaces."),
+         "first, the darkest has no tracks published at all. Without the "
+         "pipeline on this machine, dimmed cards all say the same thing — "
+         "bring your own surface: grow a patch in VC3D and add its "
+         "<code>.volpkg</code> in Folders. Click a bright card to open its "
+         "surfaces."),
 
         ("The surface list",
          "One row per surface: window, wrap, area, what the package's own "
@@ -63,7 +70,12 @@ GROUPS = [
          "you see: <i>What do you see?</i> for ink, <i>Surface</i> for the "
          "sheet. Amber lines below the picture warn when a verdict does not "
          "rest on what was opened — ink judged without an ink map, say, or "
-         "nothing judged at a zoom too low to see a letter."),
+         "nothing judged at a zoom too low to see a letter. A surface that "
+         "came without a flattened view — the published package is meshes "
+         "only — shows an amber <b>Make flattened view</b> button. It reads "
+         "the CT along the mesh the way vc_render_tifxyz would, with the "
+         "same rules, and needs no VC3D: about half a minute for a package "
+         "surface, two minutes for a large one."),
 
         ("Cuts and their labels",
          "<b>Make cut</b> appears on surfaces that have none and takes about "
@@ -84,19 +96,27 @@ GROUPS = [
          "<b>Show log</b> follows it live. Only one run at a time, counting "
          "the pipeline's desktop icon: two on one GPU would fight for memory "
          "and could pick the same window. New surfaces join the catalogue "
-         "when the run ends; nothing needs restarting."),
+         "when the run ends; nothing needs restarting. Without a pipeline on "
+         "this machine the screen lists what one needs — the villa checkout "
+         "with its spiral environment (Linux or WSL with an NVIDIA GPU), "
+         "vc_render_tifxyz from a VC3D release, the ink-detection checkout "
+         "and per-scroll inputs — and <b>Start</b> stays off."),
 
         ("The fibre gate",
          "The queue of panels the pipeline made, one at a time. Judge with "
          "the four buttons and the next one comes up; <i>skip</i> leaves it "
          "for later. The table beside each panel is what the pipeline "
-         "measured on that surface, direction in the team's terms."),
+         "measured on that surface, direction in the team's terms. Empty "
+         "without the pipeline: the panels come from its runs."),
 
         ("Folders",
          "Where material on this machine lives. The published package comes "
          "over the network on its own; add folders for local surfaces, ink "
          "maps, or the pipeline's working folder, which is recognised and "
-         "read as it is."),
+         "read as it is. A VC3D <code>.volpkg</code> is read too: every patch "
+         "under its <code>paths/</code> shows up, named by its uuid, with the "
+         "window taken from its bounding box, and gets a flattened view and "
+         "cuts like any other surface."),
 
         ("Keys",
          "The old triage tool's keys still work. In the surface view: "
@@ -254,9 +274,10 @@ GROUPS = [
          "<code>~/.cache/volumen/cortes/</code>. Cut labels: "
          "<code>~/.local/share/volumen/cut_labels.jsonl</code>. "
          "Folder settings: <code>~/.config/volumen/folders.json</code>. "
-         "Exports for VC3D: <code>~/Volumen exports/</code>. The first and "
-         "the third are the ones worth backing up — everything else can be "
-         "made again."),
+         "Exports for VC3D: <code>~/Volumen exports/</code>. Flattened views "
+         "made here, downloaded meshes and ink maps: "
+         "<code>~/.cache/volumen/</code>. The first and the third are the "
+         "ones worth backing up — everything else can be made again."),
     ]),
 
     ("If you do find letters", [
