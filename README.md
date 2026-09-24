@@ -92,11 +92,14 @@ window stays responsive; a package surface takes ~30 s, a large one ~2 min.
 <details>
 <summary><b>Making surfaces: what the pipeline does and what it needs</b></summary>
 
-*Make surfaces* runs the author's minimal-route pipeline — the one behind
-the published package. For each window of a scroll it fits a spiral to the
-sheet material, flattens one winding at a time, renders the CT along each
-surface, runs the ink model in both directions, and files the results
-where the rest of the app reads them. Two routes: **with lasagna** uses the
+*Make surfaces* runs the team's **minimal route** — the spiral fitter and
+flattener from [villa](https://github.com/ScrollPrize/villa), the render
+from VC3D, the [ink model](https://github.com/ScrollPrize/villa/tree/main/ink-detection)
+— wrapped in the author's scripts that go window by window: fit a spiral
+to the sheet material, flatten one winding at a time, render the CT along
+each surface, run the ink model in both directions, and file the results
+where the rest of the app reads them. This is the chain behind the
+published package. Two routes: **with lasagna** uses the
 team's published sheet-direction volumes; **geometric** (experimental,
 validated on one scroll) computes them from the raw CT instead.
 
