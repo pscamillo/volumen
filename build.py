@@ -85,7 +85,26 @@ def pipeline_root() -> str:
     return config.pipeline_root()
 
 
+RE_ROLOS = re.compile(r"^\s*(?P<rolo>[0-9A-Za-z]+)\)\s+VOLID=.*?LAS=(?P<las>\S+)",
+                      re.M)
+
+
 def lasagna_scrolls(root: str) -> list[str]:
+    """Scrolls this pipeline can run with lasagna.
+
+    An installed pipeline (setup_pipeline.py) keeps the table in rolos.sh;
+    a scroll is listed once it is prepared (render_<ROLO>.sh written by
+    `scroll`). The author's rota_minima keeps the table inside
+    esteira_via3.sh, in a case statement."""
+    rolos = os.path.join(root, "rolos.sh")
+    if os.path.isfile(rolos):
+        try:
+            txt = open(rolos, encoding="utf-8").read()
+        except OSError:
+            return []
+        return [m.group("rolo") for m in RE_ROLOS.finditer(txt)
+                if m.group("las") != "SEM-LASAGNA"
+                and os.path.isfile(os.path.join(root, f"render_{m.group('rolo')}.sh"))]
     try:
         with open(os.path.join(root, "esteira_via3.sh"),
                   encoding="utf-8") as f:
@@ -199,8 +218,12 @@ class BuildPage(QWidget):
         self.setup_btn.setObjectName("primary")
         self.setup_btn.clicked.connect(self.open_setup)
         self.setup_btn.setVisible(False)
+        self.scroll_btn = QPushButton("Prepare another scroll…")
+        self.scroll_btn.clicked.connect(self.open_setup)
+        self.scroll_btn.setVisible(False)
         srow = QHBoxLayout()
         srow.addWidget(self.setup_btn)
+        srow.addWidget(self.scroll_btn)
         srow.addStretch()
         outer.addLayout(srow)
 
@@ -255,11 +278,16 @@ class BuildPage(QWidget):
             self.setup_btn.setVisible(True)
             return
         self.setup_btn.setVisible(False)
+        # an installed pipeline (rolos.sh) can prepare more scrolls here
+        self.scroll_btn.setVisible(
+            os.path.isfile(os.path.join(self.root, "rolos.sh")))
         self.mode_changed()
 
     def open_setup(self) -> None:
         import setup_page
-        dlg = setup_page.SetupDialog(self)
+        dest = os.path.dirname(self.root) if self.root and os.path.isfile(
+            os.path.join(self.root, "rolos.sh")) else ""
+        dlg = setup_page.SetupDialog(self, dest=dest)
         dlg.installed.connect(lambda _d: self.refresh())
         dlg.exec()
         self.refresh()
