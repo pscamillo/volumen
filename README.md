@@ -1,16 +1,22 @@
 # Volumen
 
-A desktop workbench for the Herculaneum scroll surfaces published in
-[vesuvius-eligible-meshes](https://github.com/pscamillo/vesuvius-eligible-meshes)
-— 340 surfaces across eight First Letters scrolls — and for any surface of
-your own, grown in VC3D or fitted elsewhere.
+A desktop workbench for the Herculaneum scrolls eligible for the First
+Letters prize. It opens a surface, shows the CT along it, cuts the raw CT
+through it to check that it sits on one sheet, shows the ink map where one
+exists, and keeps a record of every judgement — and, on a machine with an
+NVIDIA GPU, it makes new surfaces with the same pipeline that produced the
+published package.
 
-It opens a surface, shows the CT along it (the flattened view, made here
-without VC3D), lets you cut the raw CT through it to see whether it sits on
-one sheet, shows the ink map where one exists, and records what you saw.
-Everything arrives on demand over the network; nothing to download first.
+Two tiers, one loop:
 
-**Needs only Python.** No VC3D, no GPU, no checkout of anything.
+- **Reading — any computer with Python.** The 340 surfaces of
+  [vesuvius-eligible-meshes](https://github.com/pscamillo/vesuvius-eligible-meshes)
+  (eight scrolls), plus any surface of your own, grown in VC3D or fitted
+  elsewhere. The flattened view is made here, from the CT, without VC3D.
+  Everything arrives on demand over the network; nothing to download first.
+- **Making surfaces — Linux or WSL with an NVIDIA GPU.** Spiral fit,
+  flatten, render and ink model, window by window, into the same catalogue.
+  Optional, and the app says exactly what it needs (see below).
 
 ## Run it
 
@@ -34,7 +40,7 @@ install already has what PySide6 needs; on a minimal system add
 ## What you can do
 
 - **Scrolls** — the 23 First Letters volumes. The eight with published
-  surfaces open; the others tell you how to bring your own.
+  surfaces open; the others tell you how to bring your own, or to make them.
 - **Explore** one surface: the flattened CT, the ink maps (forward and
   reverse, where published), three cuts through the raw CT with the
   surface drawn on them, a 1 mm bar and a letter-sized box for scale.
@@ -43,6 +49,9 @@ install already has what PySide6 needs; on a minimal system add
   your answers.
 - **Bring your own surfaces**: point *Folders* at any tifxyz folder, or at
   a VC3D `.volpkg` — patches grown in GrowPatch show up alongside.
+- **Make surfaces** (with the pipeline installed): pick a route, a scroll
+  and how many windows; new surfaces join the catalogue as each window
+  finishes, and the fibre gate queues their panels for judgement.
 
 <details>
 <summary><b>How the flattened view is made without VC3D</b></summary>
@@ -66,6 +75,36 @@ window stays responsive; a package surface takes ~30 s, a large one ~2 min.
 </details>
 
 <details>
+<summary><b>Making surfaces: what the pipeline does and what it needs</b></summary>
+
+*Make surfaces* runs the author's minimal-route pipeline — the one behind
+the published package. For each window of a scroll it fits a spiral to the
+sheet material, flattens one winding at a time, renders the CT along each
+surface, runs the ink model in both directions, and files the results
+where the rest of the app reads them. Two routes: **with lasagna** uses the
+team's published sheet-direction volumes; **geometric** (experimental,
+validated on one scroll) computes them from the raw CT instead.
+
+It needs, on Linux or WSL2:
+
+| what | why | size |
+|---|---|---|
+| NVIDIA GPU, driver with CUDA ≥ 12.8 | the fitter runs on Triton + CUDA (torch cu128) | 12 GB VRAM tested; 6 GB reported as very tight |
+| RAM | the fitter and the render | 32 GB comfortable; 16 GB tight |
+| the ScrollPrize [villa](https://github.com/ScrollPrize/villa) checkout at a pinned commit, with its spiral environment | `fit_spiral.py` | ~10 GB |
+| `vc_render_tifxyz` from a [VC3D release](https://github.com/ScrollPrize/villa/releases) | the full multi-layer render the ink model reads | ~125 MB |
+| the `ink-detection` package and the `ink_9um` checkpoint | the ink model | a few GB |
+| per scroll: tracks (`.dbm`), an umbilicus, a render template | the fitter's inputs | 5–13 GB per scroll |
+
+Setting this up is a manual step today: the *Make surfaces* screen lists
+the four things it cannot find, and the pipeline is recognised as soon as
+its folder is added in *Folders*. A guided installer — checks first, and
+nothing downloaded until every check passes — is in progress. Windows
+(native) and macOS cannot run the fitter; they can still do everything in
+the reading tier.
+</details>
+
+<details>
 <summary><b>Where things live on your machine</b></summary>
 
 | what | where |
@@ -77,18 +116,6 @@ window stays responsive; a package surface takes ~30 s, a large one ~2 min.
 
 The cache can be deleted at any time; it is rebuilt on demand. The data
 folder holds what cannot be made again.
-</details>
-
-<details>
-<summary><b>Making surfaces (optional, Linux + NVIDIA)</b></summary>
-
-*Make surfaces* runs the author's pipeline — spiral fit, flatten, render,
-ink model — for scrolls with published lasagna fields. It is not part of
-this repository and needs the ScrollPrize `villa` checkout with its spiral
-environment (Triton + CUDA), `vc_render_tifxyz` from a VC3D release, the
-`villa_ink` checkout and its checkpoint, and per-scroll inputs. The app
-says so on that screen; without it, surfaces come from the package, from
-VC3D patches, or from any tifxyz folder.
 </details>
 
 <details>
