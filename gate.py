@@ -44,8 +44,8 @@ import core
 
 import config  # noqa: E402
 # "" when there is no pipeline here; every use below checks the file exists
-PIPELINE = config.pipeline_root()
-QUEUE = f"{PIPELINE}/fila_gate" if PIPELINE else ""
+PIPELINE = config.pipeline_root()          # kept for callers that want one
+QUEUES = [(r, os.path.join(r, "fila_gate")) for r in config.pipeline_roots()]
 
 RE_PANEL = re.compile(r"^painel_(?P<rolo>[0-9A-Za-z]+)z(?P<z0>\d+)_"
                       r"(?P<wrap>w\d+)\.png$")
@@ -73,15 +73,17 @@ NOTE_LABELS = (
 
 def panels() -> list[dict]:
     """Every panel in the queue, newest scroll first."""
-    if not os.path.isdir(QUEUE):
-        return []
     out = []
-    for fn in sorted(os.listdir(QUEUE)):
+    for root, queue in QUEUES:
+      if not os.path.isdir(queue):
+        continue
+      for fn in sorted(os.listdir(queue)):
         m = RE_PANEL.match(fn)
         if not m:
             continue
         out.append({
-            "file": os.path.join(QUEUE, fn),
+            "root": root,
+            "file": os.path.join(queue, fn),
             "scroll": m.group("rolo"),
             "window": int(m.group("z0")),
             "wrap": m.group("wrap"),
@@ -90,7 +92,7 @@ def panels() -> list[dict]:
     return out
 
 
-def metrics(scroll: str, window: int, wrap: str) -> list[dict]:
+def metrics(scroll: str, window: int, wrap: str, root: str = "") -> list[dict]:
     """The four rows the pipeline wrote for this wrap.
 
     One per direction and polarity. n_comp is connected components, n_void
@@ -98,8 +100,16 @@ def metrics(scroll: str, window: int, wrap: str) -> list[dict]:
     where it could be measured, row_org whether rows looked organised, and
     px_surv the surviving pixel count.
     """
-    p = f"{PIPELINE}/esteira_{scroll}.csv"
-    if not os.path.isfile(p):
+    # the CSV of the pipeline the panel came from; without a root, the
+    # first pipeline that has one for this scroll
+    roots = [root] if root else [r for r, _ in QUEUES]
+    p = ""
+    for r in roots:
+        c = os.path.join(r, f"esteira_{scroll}.csv")
+        if os.path.isfile(c):
+            p = c
+            break
+    if not p:
         return []
     w = wrap[1:]                       # "w020" -> "020"
     out = []
@@ -294,7 +304,7 @@ class GatePage(QWidget):
                 max(400, self.panel.width()), max(400, self.panel.height()),
                 Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
-        rows = metrics(c["scroll"], c["window"], c["wrap"])
+        rows = metrics(c["scroll"], c["window"], c["wrap"], c.get("root", ""))
         if rows:
             html = ["<table cellpadding='3'>"
                     "<tr><td><b>direction</b></td><td><b>pol</b></td>"

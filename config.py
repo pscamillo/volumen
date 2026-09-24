@@ -71,12 +71,19 @@ def migrate() -> None:
         print(f"config: findings adopted from {_LEGACY_FINDINGS}")
 
 
+def pipeline_roots() -> list[str]:
+    """Every folder in Folders that holds esteira_via3.sh, in Folders order.
+    The author's machine has two (rota_minima and the installed one, 24/09);
+    a user's usually one."""
+    return [p for p in sources.local_folders()
+            if os.path.isfile(os.path.join(p, "esteira_via3.sh"))]
+
+
 def pipeline_root() -> str:
-    """The folder that holds esteira_via3.sh, or "" when there is none."""
-    for p in sources.local_folders():
-        if os.path.isfile(os.path.join(p, "esteira_via3.sh")):
-            return p
-    return ""
+    """The first pipeline folder, or "" when there is none (Make surfaces
+    runs one pipeline; the gate and the catalogue read all of them)."""
+    roots = pipeline_roots()
+    return roots[0] if roots else ""
 
 
 def pipeline_ok() -> bool:
