@@ -53,6 +53,21 @@ install already has what PySide6 needs; on a minimal system add
   and how many windows; new surfaces join the catalogue as each window
   finishes, and the fibre gate queues their panels for judgement.
 
+## How to judge
+
+Look at the flattened CT first, not the ink. **Surface**: can you follow
+fibres across it, horizontals crossing verticals? **Sheet**: make the cuts;
+the amber line should run along one grey layer and bend with it — a V
+across a straight stack, or a slide from one layer to the next, means the
+surface crossed to a neighbouring sheet, and ink there may belong to that
+sheet. **Ink**, last, only on surfaces that passed: zoom until the dashed
+square is large and look for organisation — marks in rows, at regular
+spacing, letter-sized — not for sharp strokes. Most maps at 9 µm show
+nothing, and *nothing but texture* is a real answer: a surface judged sound
+with nothing on it is one you will not open again. Verdicts stay on your
+machine. *How this works*, inside the app, goes through each step with the
+cases it was learned from.
+
 <details>
 <summary><b>How the flattened view is made without VC3D</b></summary>
 

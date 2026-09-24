@@ -40,6 +40,14 @@ GROUPS = [
          "Python: the flattened view is made here, from the CT, without "
          "VC3D. Making surfaces is the optional step, and needs the pipeline "
          "described under <i>Make surfaces</i>."),
+
+        ("Why judge",
+         "Judging is how the search narrows. A scroll has hundreds of "
+         "surfaces; the ones you have marked as sitting on one sheet with "
+         "clean weave are the short list you come back to — to look again at "
+         "higher zoom, to run another model on, to export to VC3D. A surface "
+         "judged sound with nothing on it is one you will not have to open "
+         "again. Verdicts are yours, kept on this machine."),
     ]),
 
     ("Using the app", [
@@ -175,6 +183,26 @@ GROUPS = [
     ]),
 
     ("Checking the surface", [
+        ("A surface, step by step",
+         "Open it and look at the flattened CT first, not the ink. "
+         "<b>1. Surface.</b> Can you follow fibres across it — horizontals "
+         "crossing verticals, the weave of a sheet? Clean weave is "
+         "<i>good</i>; weave in parts is <i>partial</i>; swirls, blocks or "
+         "diagonal fibre is <i>poor</i>; nothing readable is "
+         "<i>unreadable</i>. <b>2. Sheet.</b> Make the cuts and open each. "
+         "The amber line is the surface; the grey layers are the sheets of "
+         "the scroll, stacked. On one sheet, the line runs along one layer "
+         "and bends with it. Where the line bends and the layers around it "
+         "do not — a V across a straight stack — or where it slides from one "
+         "layer to the next, the surface has crossed to a neighbouring sheet, "
+         "and any ink there may belong to that sheet: <i>crosses sheets</i>. "
+         "Mark <i>can't tell</i> when the layers themselves are too crushed "
+         "to follow. <b>3. Ink</b>, last, and only on surfaces that passed "
+         "the first two: zoom until the dashed square is large, and look for "
+         "organisation — marks in rows, at regular spacing, letter-sized — "
+         "not for sharp strokes. Most maps at 9 µm will show nothing; "
+         "<i>nothing but texture</i> is a real answer."),
+
         ("The fibre gate",
          "Before ink, the question is whether the surface sits on papyrus at "
          "all. The gate shows each flattened panel next to one from PHerc1667 "
@@ -204,10 +232,12 @@ GROUPS = [
 
         ("Why cut labels",
          "Each cut can be labelled: <i>follows one sheet</i>, <i>crosses "
-         "sheets</i> or <i>can't tell</i>. About twenty are needed before the "
-         "angle between the line and the layering can be turned into a "
-         "number and checked against the eye. <i>Can't tell</i> counts too: "
-         "it shows where the visual test stops working."),
+         "sheets</i> or <i>can't tell</i>. The labels are your own record "
+         "of which surfaces are sound, cut by cut: a surface with three "
+         "cuts that follow one sheet is one you can trust when you go back "
+         "to it. <i>Can't tell</i> counts too: it marks where the layers are "
+         "too crushed for the test to work, which is worth knowing before "
+         "spending time on the ink there."),
     ]),
 
     ("Reading the ink", [
