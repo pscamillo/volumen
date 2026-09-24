@@ -271,9 +271,23 @@ INTRO = [
     "tool — any surface here can be exported to it as a ready-made project.",
 ]
 
-FOOTER = ("Designed and directed by pscamillo, implemented with Claude.  "
-          "Data: Vesuvius Challenge open data, CC BY-NC 4.0.  "
-          "An independent project, not affiliated with the Scroll Prize.")
+def _version() -> str:
+    """From pyproject.toml beside this file (the repo); "dev" elsewhere."""
+    import re
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pyproject.toml")
+    try:
+        m = re.search(r'^version\s*=\s*"([^"]+)"', open(p, encoding="utf-8").read(), re.M)
+        return m.group(1) if m else "dev"
+    except OSError:
+        return "dev"
+
+
+# what serves the person on every screen: version (for bug reports), the
+# data's origin and licence (a CC BY-NC condition), and non-affiliation.
+# Credits live in About, the README and LICENSE.
+FOOTER = (f"Volumen {_version()}  ·  "
+          "Data: Vesuvius Challenge open data, CC BY-NC 4.0  ·  "
+          "An independent project, not affiliated with the Scroll Prize")
 
 
 class IntroPage(QWidget):

@@ -52,7 +52,8 @@ PIPELINE_NEEDS = (
               "with an NVIDIA GPU)"),
     ("vc_render_tifxyz", "from a VC3D release, for the full multi-layer "
                          "render the ink model reads"),
-    ("villa_ink", "the ink-detection checkout and its checkpoint"),
+    ("ink-detection", "the team's ink model (koine_machines) and the "
+                      "ink_9um checkpoint"),
     ("inputs per scroll", "tracks, umbilicus and a render template in the "
                           "pipeline folder"),
 )

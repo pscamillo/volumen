@@ -194,6 +194,16 @@ class BuildPage(QWidget):
         self.blurb.setWordWrap(True)
         outer.addWidget(self.blurb)
 
+        # without a pipeline: the installer (setup_page.py), checks first
+        self.setup_btn = QPushButton("Set up the pipeline…")
+        self.setup_btn.setObjectName("primary")
+        self.setup_btn.clicked.connect(self.open_setup)
+        self.setup_btn.setVisible(False)
+        srow = QHBoxLayout()
+        srow.addWidget(self.setup_btn)
+        srow.addStretch()
+        outer.addLayout(srow)
+
         self.warning = QLabel(WARNING_GEO)
         self.warning.setWordWrap(True)
         self.warning.setStyleSheet(
@@ -233,14 +243,26 @@ class BuildPage(QWidget):
                 "means running the spiral fitter and the ink model, and "
                 "that needs:</p>"
                 f"<ul>{needs}</ul>"
-                "<p>With those in place, add the folder that holds "
-                "esteira_via3.sh in Folders. Without them, surfaces can "
-                "still come from the published package, from a patch "
-                "grown in VC3D (add its .volpkg in Folders), or from "
-                "any tifxyz folder.</p>")
+                "<p><b>Set up the pipeline</b> does this for you: it checks "
+                "the machine first (Linux or WSL, NVIDIA GPU, memory, disk) "
+                "and downloads only after you have seen what it costs and "
+                "said yes. If you already have these, add the folder that "
+                "holds esteira_via3.sh in Folders. Without them, surfaces "
+                "still come from the published package, from a patch grown "
+                "in VC3D (add its .volpkg in Folders), or from any tifxyz "
+                "folder.</p>")
             self.start_btn.setEnabled(False)
+            self.setup_btn.setVisible(True)
             return
+        self.setup_btn.setVisible(False)
         self.mode_changed()
+
+    def open_setup(self) -> None:
+        import setup_page
+        dlg = setup_page.SetupDialog(self)
+        dlg.installed.connect(lambda _d: self.refresh())
+        dlg.exec()
+        self.refresh()
 
     def mode_changed(self, *_):
         self.mode = self.route.currentData() or "lasagna"
