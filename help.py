@@ -39,7 +39,14 @@ GROUPS = [
          "Everything but <i>making</i> surfaces runs on any computer with "
          "Python: the flattened view is made here, from the CT, without "
          "VC3D. Making surfaces is the optional step, and needs the pipeline "
-         "described under <i>Make surfaces</i>."),
+         "described under <i>Make surfaces</i>. "
+         "The surfaces already here when the app first opens are the 340 of "
+         f"{a('https://github.com/pscamillo/vesuvius-eligible-meshes', 'vesuvius-eligible-meshes')}"
+         ", a package published by the author: one per window and wrap on "
+         "eight eligible scrolls, made with the same minimal route this app "
+         "runs, and fetched on demand as you open them. They are fitted, not "
+         "verified — the checks below apply to them as to any other. Surfaces "
+         "you make or bring in join them in the same lists."),
 
         ("Why judge",
          "Judging is how the search narrows. A scroll has hundreds of "
@@ -322,6 +329,18 @@ GROUPS = [
          "team privately before any public post — and they change, so read "
          f"them at the source: {a(PRIZES, 'scrollprize.org/prizes')}. Check "
          "the cut first: a candidate on a crossing surface is not one."),
+    ]),
+
+    ("Credits", [
+        ("Who made this",
+         "Designed and directed by Paulo Sergio Camillo (pscamillo); "
+         "implemented with Claude. Code under the MIT licence, at "
+         f"{a('https://github.com/pscamillo/volumen', 'github.com/pscamillo/volumen')}. "
+         "The surfaces come from "
+         f"{a('https://github.com/pscamillo/vesuvius-eligible-meshes', 'vesuvius-eligible-meshes')}; "
+         "the scans, lasagna, tracks and ink model from the Vesuvius "
+         "Challenge's open data and code (CC BY-NC 4.0), and the minimal "
+         f"route from the team's {a(VILLA, 'villa')}."),
     ]),
 ]
 

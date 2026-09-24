@@ -55,7 +55,6 @@ HITS = ("shapes that could be letters", "clear letters")
 CUTS_DIR = os.path.expanduser("~/.cache/volumen/cortes")
 import config  # noqa: E402
 CUT_LABELS = config.CUT_LABELS
-LABELS_NEEDED = 20
 WINDOW = 800
 RE_WORK = re.compile(r"^work[A-Za-z]*_(?P<rolo>[0-9A-Za-z]+)_z(?P<z>\d+)$")
 
@@ -500,8 +499,8 @@ class ProgressPage(QWidget):
 
         self._clear_tiles()
         u = max(1, tot["units"])
-        decided = sum(1 for v in labels.values() if v in ("segue",
-                                                          "atravessa"))
+        follows = sum(1 for v in labels.values() if v == "segue")
+        crosses = sum(1 for v in labels.values() if v == "atravessa")
         unsure = sum(1 for v in labels.values() if v == "incerto")
         n_ruim = sum(len(v) for v in ruins.values())
         for tile in (
@@ -512,10 +511,11 @@ class ProgressPage(QWidget):
                  f"{100 * tot['gated'] / u:.0f}% of all surfaces"),
             Tile(f"{tot['ink']}", "judged for ink", tot["ink"] / u, JUDGED,
                  f"{tot['cut']} with a cut"),
-            Tile(f"{decided}/{LABELS_NEEDED}", "cut labels",
-                 decided / LABELS_NEEDED, CUT,
-                 f"{unsure} unsure — needed before the angle can be "
-                 f"measured"),
+            # a count, not a target: the angle-measuring verifier that
+            # needed twenty was dropped on 22/09
+            Tile(f"{len(labels)}", "cut labels", None, CUT,
+                 f"{follows} follow one sheet · {crosses} cross · "
+                 f"{unsure} can't tell"),
             Tile(f"{tot['hits']}", "with shapes that could be letters",
                  None, INK if tot["hits"] else MUTED),
         ):

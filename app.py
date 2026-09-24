@@ -167,6 +167,17 @@ class Splash(QWidget):
             self.foot.setAlignment(Qt.AlignCenter)
             self.foot.setStyleSheet(
                 f"border-top: 1px solid {LINE}; font-size: 12px;")
+        # the signature: one quiet line above the footer, on the opening
+        # screen and in About alike; the full credits are in How this works
+        self.credit = QLabel(
+            "by pscamillo - <a href='https://github.com/pscamillo/volumen' "
+            "style='color:#e8a33d; text-decoration:none'>"
+            "https://github.com/pscamillo/volumen</a>", self)
+        self.credit.setObjectName("muted")
+        self.credit.setAlignment(Qt.AlignCenter)
+        self.credit.setTextFormat(Qt.RichText)
+        self.credit.setOpenExternalLinks(True)
+        self.credit.setStyleSheet("font-size: 12px;")
         self.setStyleSheet(STYLE)
         lay = QVBoxLayout(self)
         lay.setAlignment(Qt.AlignCenter)
@@ -187,7 +198,7 @@ class Splash(QWidget):
         self.tag = QLabel("scroll workbench")
         self.tag.setObjectName("muted")
         self.tag.setAlignment(Qt.AlignCenter)
-        lay.addWidget(self.tag)
+        # not shown since 24/09: the first paragraph already says it
 
         lay.addSpacing(14)
         self.blurbs = []
@@ -243,6 +254,9 @@ class Splash(QWidget):
         super().resizeEvent(e)
         if self.foot is not None:
             self.foot.setGeometry(0, self.height() - 42, self.width(), 42)
+        # two lines above the footer (or above the bottom edge, in About)
+        base = self.height() - (42 if self.foot is not None else 0)
+        self.credit.setGeometry(0, base - 64, self.width(), 24)
 
     def show_at_once(self) -> None:
         """Sem animacao: e' assim que o About reusa esta tela."""
@@ -269,14 +283,6 @@ INTRO = [
     "Surfaces are fitted, never traced by hand. For that, and much more, "
     "there is <a href='https://github.com/ScrollPrize/villa/tree/main/volume-cartographer' style='color:#e8a33d; text-decoration:none'>VC3D</a>, the Vesuvius Challenge's own "
     "tool — any surface here can be exported to it as a ready-made project.",
-
-    # credits live here (and in the README and LICENSE), not in the footer
-    "<span style='color:#8a8272'>Designed and directed by Paulo Sergio "
-    "Camillo (pscamillo); implemented with Claude. MIT — "
-    "<a href='https://github.com/pscamillo/volumen' style='color:#e8a33d; text-decoration:none'>github.com/pscamillo/volumen</a>. "
-    "Surfaces from "
-    "<a href='https://github.com/pscamillo/vesuvius-eligible-meshes' style='color:#e8a33d; text-decoration:none'>vesuvius-eligible-meshes</a>; "
-    "data: Vesuvius Challenge open data, CC BY-NC 4.0.</span>",
 ]
 
 def _version() -> str:
