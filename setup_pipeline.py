@@ -222,6 +222,12 @@ def free_gb(path: str) -> float:
 
 
 def check_disk(dest: str, need_gb: float) -> Check:
+    # the pipeline's shell scripts build command lines from this path; a
+    # space breaks them silently (render found no fit output, 24/09)
+    if any(c.isspace() for c in dest):
+        return Check("disk", False,
+                     f"'{dest}' has a space in it; the pipeline's scripts "
+                     "need a folder path without spaces, e.g. ~/volumen-pipeline.")
     f = free_gb(dest)
     if f < need_gb:
         return Check("disk", False,
@@ -720,7 +726,7 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("check")
     p = sub.add_parser("plan")
-    p.add_argument("dest", nargs="?", default=os.path.expanduser("~/Volumen pipeline"))
+    p.add_argument("dest", nargs="?", default=os.path.expanduser("~/volumen-pipeline"))
     p.add_argument("--scroll", action="append", default=[])
     p = sub.add_parser("install")
     p.add_argument("dest")

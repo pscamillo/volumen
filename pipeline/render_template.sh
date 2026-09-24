@@ -11,9 +11,9 @@ VOL=__VOL__
 PX=__PX__
 OUT=$R/render___ROLO__
 
-FITDIR=$(ls -d $R/work___ROLO__/out/*/ 2>/dev/null | head -1)
+FITDIR=$(ls -d "$R"/work___ROLO__/out/*/ 2>/dev/null | head -1)
 [ -z "$FITDIR" ] && { echo "no fit output in $R/work___ROLO__/out"; exit 1; }
-MESHROOT=$(ls -d ${FITDIR}meshes/fitted_* 2>/dev/null | head -1)
+MESHROOT=$(ls -d "${FITDIR}"meshes/fitted_* 2>/dev/null | head -1)
 [ -z "$MESHROOT" ] && { echo "no meshes/fitted_* in $FITDIR"; exit 1; }
 TAG=$(basename "$MESHROOT" | sed 's/^fitted_//')
 echo "fit    : $FITDIR"
@@ -35,7 +35,7 @@ for W in $WRAPS; do
 { "external_surfaces": [ { "path": "$M" } ] }
 EOF
     echo "-- flatten"
-    (cd "$LAS" && $PY fit.py configs/flatten_fast_nofilter.json \
+    (cd "$LAS" && "$PY" fit.py configs/flatten_fast_nofilter.json \
        "$D/flat_in.json" --out-dir "$D/flat" --device cuda 2>&1 \
        | grep -E "stage2 1000|area_vx2|total optimize" | sed 's/^/   /')
   else
@@ -52,7 +52,7 @@ EOF
   else
     echo "-- render already here"
   fi
-  $PY - "$D" "$PX" <<'PYEOF'
+  "$PY" - "$D" "$PX" <<'PYEOF'
 import sys, os
 import numpy as np, zarr, tifffile
 d, px = sys.argv[1], float(sys.argv[2])
