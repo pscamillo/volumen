@@ -101,14 +101,17 @@ GROUPS = [
 
         ("Make surfaces",
          "Pick a route, a scroll and how many windows, then <b>Start</b>. "
-         "<b>Show log</b> follows it live. Only one run at a time, counting "
-         "the pipeline's desktop icon: two on one GPU would fight for memory "
+         "<b>Show log</b> follows it live. Only one run at a time: "
+         "two on one GPU would fight for memory "
          "and could pick the same window. New surfaces join the catalogue "
          "when the run ends; nothing needs restarting. Without a pipeline on "
          "this machine the screen lists what one needs — the villa checkout "
          "with its spiral environment (Linux or WSL with an NVIDIA GPU), "
          "vc_render_tifxyz from a VC3D release, the ink-detection checkout "
-         "and per-scroll inputs — and <b>Start</b> stays off."),
+         "and per-scroll inputs. <b>Set up the pipeline…</b> checks this "
+         "machine, shows what it would download, and installs only after "
+         "you say yes; <b>Prepare another scroll…</b> then fetches each "
+         "scroll's inputs."),
 
         ("The fibre gate",
          "The queue of panels the pipeline made, one at a time. Judge with "
@@ -174,8 +177,8 @@ GROUPS = [
          "half-made window is moved aside to <code>_interrompidos/</code>, "
          "not deleted, and redone next time."),
 
-        ("RUIM windows",
-         "When the fit finds no winding, the window is marked RUIM. Most sit "
+        ("Windows with no winding",
+         "When the fit finds no winding, the window is marked as tried. Most sit "
          "at the top and bottom of a scroll, where the geometry runs out. "
          "Progress draws them hatched, so a gap on a strip reads as <i>never "
          "tried</i> and hatching as <i>tried, no winding</i> — one asks for "
@@ -291,7 +294,8 @@ GROUPS = [
          "One strip per scroll along its height, every window the pipeline "
          "tried as a block on it: filled as its surfaces are judged, a teal "
          "band once something went through the gate, an amber edge if "
-         "letters are suspected, hatched if RUIM. Counting surfaces says how "
+         "letters are suspected, hatched where the fit found no winding. "
+         "Counting surfaces says how "
          "much was done; the strip says <i>where</i> — and usually that most "
          "of a scroll is still untouched."),
     ]),

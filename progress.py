@@ -246,7 +246,7 @@ class Strip(QWidget):
             p.setPen(QPen(RUIM, 1))
             p.setBrush(QBrush(RUIM, Qt.BDiagPattern))
             p.drawRoundedRect(r, 4, 4)
-            self._boxes.append((r, f"z{z0}–{z0 + WINDOW}\nRUIM — the fit "
+            self._boxes.append((r, f"z{z0}–{z0 + WINDOW}\ntried — the fit "
                                    f"found no winding here"))
 
         for z0, c in sorted(self.windows.items()):
@@ -331,7 +331,7 @@ class ScrollCard(QFrame):
         sub.setObjectName("muted")
         left.addWidget(sub)
         wins = QLabel(f"{len(windows)} window{'s' if len(windows) != 1 else ''}"
-                      + (f"  ·  {len(ruins)} RUIM" if ruins else ""))
+                      + (f"  ·  {len(ruins)} with no winding" if ruins else ""))
         wins.setObjectName("muted")
         wins.setStyleSheet("font-size: 12px;")
         left.addWidget(wins)
@@ -418,7 +418,7 @@ class ProgressPage(QWidget):
         for kind, text in (("fill", "judged for ink"),
                            ("gate", "through the fibre gate"),
                            ("hit", "shapes that could be letters"),
-                           ("ruim", "RUIM — tried, no winding")):
+                           ("ruim", "tried, no winding")):
             legend.addWidget(Swatch(kind))
             lb = QLabel(text)
             lb.setObjectName("muted")
@@ -506,7 +506,7 @@ class ProgressPage(QWidget):
         n_ruim = sum(len(v) for v in ruins.values())
         for tile in (
             Tile(f"{tot['units']}", f"surfaces in {len(by)} scrolls", None,
-                 TEXT, f"{n_ruim} windows RUIM" if n_ruim else ""),
+                 TEXT, f"{n_ruim} windows with no winding" if n_ruim else ""),
             Tile(f"{tot['gated']}", "through the fibre gate",
                  tot["gated"] / u, GATE,
                  f"{100 * tot['gated'] / u:.0f}% of all surfaces"),

@@ -389,7 +389,7 @@ class BuildPage(QWidget):
                 m = RE_WINDOW.search(ln)
                 if m:
                     self.current_z0 = m.group("z0")
-            if ln.startswith("==") or "FLAG" in ln or "RUIM" in ln:
+            if ln.startswith("==") or "FLAG" in ln or "RUIM" in ln or "no winding" in ln:
                 self.summary.setText(ln.strip())
 
     def update_clock(self) -> None:

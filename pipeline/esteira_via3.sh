@@ -48,7 +48,7 @@ PY
   # 1. FIT
   bash "$R/rota_janela.sh" "$ROLO" "$VOLID" "$UMB" "$LAS" "$VOX" "$OFF" > log_est_${ROLO}_z${Z0}_fit.txt 2>&1
   if ! grep -q "winding range \[0, [1-9]" log_est_${ROLO}_z${Z0}_fit.txt; then
-    echo "!! fit z$Z0 found no winding — window marked RUIM, on to the next"
+    echo "!! fit z$Z0 found no winding — marked as tried, on to the next"
     mkdir -p "$W" && touch "$W/RUIM"
     rm -rf "lasagna_PHerc${ROLO}_z${Z0}"
     continue

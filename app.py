@@ -269,6 +269,14 @@ INTRO = [
     "Surfaces are fitted, never traced by hand. For that, and much more, "
     "there is <a href='https://github.com/ScrollPrize/villa/tree/main/volume-cartographer' style='color:#e8a33d; text-decoration:none'>VC3D</a>, the Vesuvius Challenge's own "
     "tool — any surface here can be exported to it as a ready-made project.",
+
+    # credits live here (and in the README and LICENSE), not in the footer
+    "<span style='color:#8a8272'>Designed and directed by Paulo Sergio "
+    "Camillo (pscamillo); implemented with Claude. MIT — "
+    "<a href='https://github.com/pscamillo/volumen' style='color:#e8a33d; text-decoration:none'>github.com/pscamillo/volumen</a>. "
+    "Surfaces from "
+    "<a href='https://github.com/pscamillo/vesuvius-eligible-meshes' style='color:#e8a33d; text-decoration:none'>vesuvius-eligible-meshes</a>; "
+    "data: Vesuvius Challenge open data, CC BY-NC 4.0.</span>",
 ]
 
 def _version() -> str:
@@ -438,7 +446,7 @@ class ScrollCard(QFrame):
             # run here, and every window failed to fit: a different
             # situation from never having been run
             body = (f"Run here — all {n_ruim} window"
-                    f"{'s' if n_ruim != 1 else ''} came back RUIM, "
+                    f"{'s' if n_ruim != 1 else ''} were tried, "
                     f"the fit found no winding")
         elif not config.pipeline_ok():
             body = NO_PIPELINE_TEXT
