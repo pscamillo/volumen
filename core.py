@@ -457,7 +457,7 @@ def gera_mid(mesh_dir: str, scroll: "Scroll", workers: int = WORKERS,
     import json
     pts, valid = read_tifxyz(mesh_dir)
     try:
-        meta = json.load(open(f"{mesh_dir}/meta.json"))
+        meta = json.load(open(f"{mesh_dir}/meta.json", encoding="utf-8"))
         step = 1.0 / float(meta["scale"][0])
         # GrowPatch writes scale as float32 (0.05000000074505806, seen in
         # spiral-dataset auto_grown_20260416003400745 on 23/09): 1/scale is

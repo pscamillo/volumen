@@ -122,7 +122,7 @@ VILLA_FILES = [
 ]
 
 HEADER = f"""
-# {SCROLL} — ROTA MINIMA (umbilicus + lasagna, supervision-free)
+# {SCROLL} — MINIMAL ROUTE (umbilicus + lasagna, supervision-free)
 dataset_path = {DATASET_DIR!r}
 scroll_zarr_path = None
 normal_nx_zarr_path = {NX!r}
@@ -187,13 +187,13 @@ def fetch(url, dst, attempts=5):
 
 
 def main():
-    print(f"ROTA MINIMA — {SCROLL}")
+    print(f"MINIMAL ROUTE — {SCROLL}")
     print(f"  umbilicus : {UMBILICUS}")
     print(f"  lasagna   : {LASAGNA_DIR}  (scale {LASAGNA_SCALE})")
-    print(f"  janela    : z {Z_BEGIN}-{Z_END}  voxel {VOXEL_UM} um")
+    print(f"  window    : z {Z_BEGIN}-{Z_END}  voxel {VOXEL_UM} um")
     print(f"  sense     : {SPIRAL_SENSE}   shell_outer_idx: {SHELL_IDX}")
-    print(f"  tracks    : {TRACKS_DBM or 'NENHUM'}")
-    print(f"  SEM patches, SEM PCLs")
+    print(f"  tracks    : {TRACKS_DBM or 'NONE'}")
+    print(f"  no patches, no PCLs")
     print()
 
     print(f"[{time.time()-T0:6.1f}s] fetching villa spiral @ {VILLA_COMMIT[:9]}",
@@ -236,11 +236,11 @@ def main():
     log.close()
     print(f"[{time.time()-T0:6.1f}s] exit {proc.returncode}; outputs in {OUT_DIR}")
     print()
-    print("CHECAR NO LOG, antes de qualquer render:")
+    print("CHECK THE LOG before any render:")
     print("  1. 'no outer-shell losses; using configured shell_outer_winding_idx'")
     print("  2. 'loading lasagna zarrs group 2'")
-    print("  3. step 0 com dense_normals != 0.0 e umbilicus != 0.0")
-    print("  Se (3) falhar, o braco e' nulo — nao renderizar.")
+    print("  3. step 0 with dense_normals != 0.0 and umbilicus != 0.0")
+    print("  If (3) fails, the arm is null — do not render.")
     sys.exit(proc.returncode)
 
 

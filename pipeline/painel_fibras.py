@@ -100,14 +100,14 @@ def main():
 
     win = args.win
     lado_mm = win * UM_ALVO * 1e-3
-    print(f"janela: {win} px @ {UM_ALVO} um = {lado_mm:.1f} mm de lado "
+    print(f"window: {win} px @ {UM_ALVO} um = {lado_mm:.1f} mm per side "
           f"({(lado_mm/10)**2:.2f} cm²)")
 
     # ---------------- alvo
-    print(f"\n[alvo] {alvo_tif.name}")
+    print(f"\n[target] {alvo_tif.name}")
     A = tifffile.imread(str(alvo_tif))
     ca, ya, xa = melhor_janela(A > 0, win, args.passo)
-    print(f"  shape {A.shape}  melhor janela y={ya} x={xa} cobertura={ca:.1%}")
+    print(f"  shape {A.shape}  best window y={ya} x={xa} coverage={ca:.1%}")
     crop_a = A[ya:ya + win, xa:xa + win].astype(np.float32)
 
     # ---------------- referencia (reamostrada para a escala do alvo)
@@ -115,10 +115,10 @@ def main():
     R = tifffile.imread(args.ref)
     fator = UM_REF / UM_ALVO          # >1: a ref precisa ser AMPLIADA
     win_ref = int(round(win / fator))  # janela em px da ref que cobre a mesma area
-    print(f"  shape {R.shape}  fator escala {fator:.4f}  "
-          f"janela na ref = {win_ref} px")
+    print(f"  shape {R.shape}  scale factor {fator:.4f}  "
+          f"window in the reference = {win_ref} px")
     cr, yr, xr = melhor_janela(R > 0, win_ref, args.passo)
-    print(f"  melhor janela y={yr} x={xr} cobertura={cr:.1%}")
+    print(f"  best window y={yr} x={xr} coverage={cr:.1%}")
     crop_r = R[yr:yr + win_ref, xr:xr + win_ref].astype(np.float32)
     crop_r = ndzoom(crop_r, win / win_ref, order=1)
     if crop_r.shape != (win, win):     # arredondamento
@@ -126,13 +126,13 @@ def main():
         if crop_r.shape != (win, win):
             pad = [(0, win - crop_r.shape[0]), (0, win - crop_r.shape[1])]
             crop_r = np.pad(crop_r, pad)
-    print(f"  reamostrada para {crop_r.shape}")
+    print(f"  resampled to {crop_r.shape}")
 
     # ---------------- normalizacao CONJUNTA
     juntos = np.concatenate([crop_r[crop_r > 0].ravel(),
                              crop_a[crop_a > 0].ravel()])
     lo, hi = np.percentile(juntos, [1.0, 99.0])
-    print(f"\n[norm] conjunta sobre os dois: p1={lo:.1f} p99={hi:.1f}")
+    print(f"\n[norm] joint over both: p1={lo:.1f} p99={hi:.1f}")
 
     def norm(t):
         n = np.clip((t - lo) / max(1e-6, hi - lo), 0, 1)
@@ -154,14 +154,14 @@ def main():
 
     out = args.out or str(base / f"painel_{args.alvo}_{win}.png")
     im.save(out)
-    print(f"\nsalvo: {out}  ({im.size[0]}x{im.size[1]})")
-    print("\nO QUE JULGAR — o criterio e' do premio, nao nosso:")
-    print("  Da para SEGUIR fibras horizontais atravessando a pagina?")
-    print("  Espere FAIXAS LARGAS (~70-150 px), nao estria fina.")
-    print("  Espere TRAMA (xadrez: horizontais x verticais cruzando).")
-    print("  REPROVA: redemoinho fechado, linha ondulada em corte transversal,")
-    print("           blocos retangulares, fibra correndo em diagonal.")
-    print("\nA pergunta pratica: o da DIREITA se parece com o da ESQUERDA?")
+    print(f"\nsaved: {out}  ({im.size[0]}x{im.size[1]})")
+    print("\nWHAT TO JUDGE — the prize's criterion, not ours:")
+    print("  Can you FOLLOW horizontal fibres across the page?")
+    print("  Expect WIDE BANDS (~70-150 px), not fine striation.")
+    print("  Expect WEAVE (a grid: horizontals crossing verticals).")
+    print("  REJECT: closed swirls, wavy lines in cross-section,")
+    print("          rectangular blocks, fibre running diagonally.")
+    print("\nThe practical question: does the RIGHT look like the LEFT?")
 
 
 if __name__ == "__main__":

@@ -76,7 +76,7 @@ def main():
     man = r.json()
     base_z = man["base_shape_zyx"][0]
     print(f"{args.scroll}: base_shape_zyx = {man['base_shape_zyx']}")
-    print(f"  umbilicus_json no manifesto: {man.get('umbilicus_json', '')!r} "
+    print(f"  umbilicus_json in the manifest: {man.get('umbilicus_json', '')!r} "
           f"(vazio e' o padrao do catalogo)")
 
     planos = {}
@@ -95,13 +95,13 @@ def main():
         s = base_z / zs
         if escala is None:
             escala = round(s)
-            print(f"\nLASAGNA_SCALE = {escala}   (base_z {base_z} / grupo2 z {zs} "
+            print(f"\nLASAGNA_SCALE = {escala}   (base_z {base_z} / group2 z {zs} "
                   f"= {s:.3f})")
             if abs(s - escala) > 0.01:
-                print(f"  AVISO: razao nao inteira ({s:.4f}). Verificar antes de usar.",
+                print(f"  WARNING: non-integer ratio ({s:.4f}). Check before using.",
                       file=sys.stderr)
             if escala != 4:
-                print(f"  NOTA: escala {escala}, diferente do 4 medido em "
+                print(f"  NOTE: scale {escala}, not the 4 measured on "
                       f"PHerc1218 e PHerc0125.", file=sys.stderr)
 
         z_lo = max(0, args.z_begin // escala)
@@ -115,11 +115,11 @@ def main():
         total += n
         planos[canal] = (za, sep, kz0, kz1, gy, gx)
         print(f"  {canal:>9}: shape={za['shape']} chunks={za['chunks']} sep='{sep}'")
-        print(f"             z-ROI [{z_lo},{z_hi}) = {z_hi-z_lo} planos  "
+        print(f"             z-ROI [{z_lo},{z_hi}) = {z_hi-z_lo} planes  "
               f"chunks z {kz0}..{kz1}  grid {gy}x{gx}  {n} chunks  "
               f"~{(z_hi-z_lo)*ys*xs/1e6:.0f} MB")
 
-    print(f"\ntotal: {total} chunks   destino: {out}")
+    print(f"\ntotal: {total} chunks   destination: {out}")
     if args.dry_run:
         return
 
@@ -152,7 +152,7 @@ def main():
             try:
                 rr = sess().get(f"{src}/{name}", timeout=120)
             except requests.RequestException as e:
-                print(f"  ERRO {name}: {e}", file=sys.stderr)
+                print(f"  ERROR {name}: {e}", file=sys.stderr)
                 return
             with lock:
                 st["n"] += 1
@@ -168,13 +168,13 @@ def main():
                     print(f"  {canal} {st['n']}/{len(keys)}  {mb:6.0f} MB  "
                           f"{mb/max(dt,1e-9):4.1f} MB/s  vazios={st['vazio']}")
 
-        print(f"\nbaixando {canal} ({len(keys)} chunks)...")
+        print(f"\ndownloading {canal} ({len(keys)} chunks)...")
         with ThreadPoolExecutor(max_workers=args.workers) as ex:
             list(ex.map(fetch, keys))
-        print(f"  {canal}: {st['b']/1e9:.2f} GB, {st['vazio']} vazios, "
+        print(f"  {canal}: {st['b']/1e9:.2f} GB, {st['vazio']} empty, "
               f"{time.time()-t0:.0f}s")
 
-    print(f"\nPRONTO. Para o header do fit:")
+    print(f"\nDONE. For the fit header:")
     print(f"  normal_zarr_group = '{GRUPO}'")
     print(f"  lasagna_scale = {escala}")
     for canal in CANAIS:
