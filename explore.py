@@ -567,9 +567,10 @@ class ExplorePage(QWidget):
         ask = QVBoxLayout()
         ask.setContentsMargins(22, 6, 22, 16)
         ask.setSpacing(8)
-        q = QLabel("What do you see?")
+        q = QLabel("Ink — what do you see?")
         q.setObjectName("h2")
-        ask.addWidget(q)
+        # placed at the end of this block, not here: How this works teaches
+        # surface (CT), sheet (cuts), ink last (25/09)
         row = QHBoxLayout()
         row.setSpacing(10)
         self.verdict_group = QButtonGroup(self)
@@ -583,11 +584,12 @@ class ExplorePage(QWidget):
             self.verdict_buttons[name] = btn
             row.addWidget(btn)
         row.addStretch()
-        ask.addLayout(row)
+        self._ink_q, self._ink_row = q, row
 
         row = QHBoxLayout()
         row.setSpacing(10)
-        lbl = QLabel("Surface:")
+        lbl = QLabel("Surface · CT:")
+        self._surf_lbl = lbl
         lbl.setObjectName("muted")
         row.addWidget(lbl)
         self.surface_group = QButtonGroup(self)
@@ -645,7 +647,7 @@ class ExplorePage(QWidget):
         row = QHBoxLayout(self.sheet_row)
         row.setContentsMargins(0, 0, 0, 0)
         row.setSpacing(10)
-        lbl = QLabel("Sheet:")
+        lbl = QLabel("Sheet · cuts:")
         lbl.setObjectName("muted")
         row.addWidget(lbl)
         self.sheet_marks = []
@@ -674,6 +676,9 @@ class ExplorePage(QWidget):
         self.cut_others_row = linha
         ask.addWidget(linha)
 
+        ask.addSpacing(6)
+        ask.addWidget(self._ink_q)
+        ask.addLayout(self._ink_row)
         lay.addLayout(ask)
         self._overlay_on = False
         self._keys()
@@ -747,6 +752,7 @@ class ExplorePage(QWidget):
 
     def toggle_overlay(self) -> None:
         self._overlay_on = not self._overlay_on
+        self._gate_rows()
         if not self._overlay_on:
             self.status.setText("")
         if self._overlay_on and self.current != "mid":
@@ -828,7 +834,12 @@ class ExplorePage(QWidget):
         prev = self.previous_verdict(v.key)
         self.sel = prev.get("verdict")
         self.sel_surface = prev.get("surface")
-        self.seen_layers = set()
+        # the same surface shown again (its cuts just made) keeps what was
+        # opened; only a new surface starts from nothing (25/09: the ink
+        # warning fired on a verdict made with the ink map open)
+        if getattr(self, "_seen_key", None) != v.key:
+            self.seen_layers = set()
+        self._seen_key = v.key
         # an exclusive group will not let every button be unchecked, so the
         # previous unit's verdict stayed stuck without releasing it
         for group, buttons, chosen in (
@@ -865,11 +876,39 @@ class ExplorePage(QWidget):
             return None
         return next((L for L in v.layers if L.key == key), None)
 
+    def _gate_rows(self) -> None:
+        """Judge what is open (25/09): the row for the open layer is live;
+        the other is shown dimmed and locked, its verdict still visible.
+        Surface · CT -> surface; an ink map -> ink; i over the CT -> both;
+        a cut -> neither (the cut has its own row)."""
+        from PySide6 import QtWidgets as _QtW
+        k = self.current or ""
+        on_ct, on_cut = k == "mid", k.startswith("cut")
+        ink_live = (not on_ct and not on_cut) or (on_ct and self._overlay_on)
+        surf_live = on_ct
+
+        def dim(w, live):
+            if live:
+                w.setGraphicsEffect(None)
+            else:
+                fx = _QtW.QGraphicsOpacityEffect(w)
+                fx.setOpacity(0.35)
+                w.setGraphicsEffect(fx)
+        for b in self.verdict_buttons.values():
+            b.setEnabled(ink_live)
+            dim(b, ink_live)
+        dim(self._ink_q, ink_live)
+        for b in self.surface_buttons.values():
+            b.setEnabled(surf_live)
+            dim(b, surf_live)
+        dim(self._surf_lbl, surf_live)
+
     def show_layer(self, key: str) -> None:
         L = self.layer(key)
         if L is None:
             return
         self.current = key
+        self._gate_rows()
         self.seen_layers.add(L.title)
         keys = [x.key for x in self.view_data.layers]
         btns = self.layer_group.buttons()
@@ -1302,10 +1341,17 @@ class ExplorePage(QWidget):
         return last
 
     def record_surface(self, name: str) -> None:
+        if not next(iter(self.surface_buttons.values())).isEnabled():
+            self.status.setText("Open Surface · CT to judge the surface.")
+            return
         self.sel_surface = name
         self.record(None)
 
     def record(self, name) -> None:
+        if not next(iter(self.verdict_buttons.values())).isEnabled():
+            self.status.setText("Open Ink · forward or reverse (or i over the "
+                                "CT) to judge the ink.")
+            return
         if self.view_data is None:
             return
         if name is not None:

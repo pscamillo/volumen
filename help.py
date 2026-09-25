@@ -257,6 +257,9 @@ GROUPS = [
          "<b>Can't tell</b> is for layers that merge or vanish over much of "
          "the line, so that none can be followed; a doubt about one short "
          "stretch is not can't tell, it is a reason to look closer there. "
+         "A cut can show the line twice: on an inner wrap of a crushed "
+         "scroll the same winding crosses the slice on its way out and back; "
+         "judge each line against its own layer. "
          "Each label is about its own cut: the three cuts cross different "
          "parts of the surface, and a surface can follow in one and cross in "
          "another."),

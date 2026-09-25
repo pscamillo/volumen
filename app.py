@@ -182,6 +182,9 @@ class Splash(QWidget):
         lay = QVBoxLayout(self)
         lay.setAlignment(Qt.AlignCenter)
         lay.setSpacing(18)
+        # centred, so a margin below lifts the whole block (~ one line per
+        # 48 px of margin)
+        lay.setContentsMargins(0, 0, 0, 48)
 
         # opening screen / About: sizes in one place (24/09: 132 / h1 / 6)
         SPLASH_MARK, SPLASH_NAME_PX, SPLASH_SPACING = 176, 46, 9
@@ -208,6 +211,8 @@ class Splash(QWidget):
         for text in INTRO:
             t = QLabel(text)
             t.setObjectName("body")
+            # a touch below the body text, so the mark and the name lead
+            t.setStyleSheet("color: #c9c1b2;")
             t.setWordWrap(True)
             t.setTextFormat(Qt.RichText)
             t.setAlignment(Qt.AlignCenter)
@@ -259,7 +264,7 @@ class Splash(QWidget):
             self.foot.setGeometry(0, self.height() - 42, self.width(), 42)
         # two lines above the footer (or above the bottom edge, in About)
         base = self.height() - (42 if self.foot is not None else 0)
-        self.credit.setGeometry(0, base - 64, self.width(), 24)
+        self.credit.setGeometry(0, base - 40, self.width(), 24)
 
     def show_at_once(self) -> None:
         """Sem animacao: e' assim que o About reusa esta tela."""
@@ -404,8 +409,10 @@ class ScrollCard(QFrame):
         withdrawn = (not s.eligible) and s.route != "demo" and bool(s.note)
         # dois niveis de apagado nos vazios: com lasanha e' so' rodar; sem
         # lasanha (ou sem tracks) a superficie vem de um patch do VC3D
-        if s.route == "demo" or withdrawn:
+        if s.route == "demo":
             name = "demo"
+        elif withdrawn:
+            name = "empty3"           # dimmed like the others; the badge says it
         elif n_units:
             name = "card"
         elif s.route == "lasagna":
@@ -520,23 +527,33 @@ class ScrollsPage(QWidget):
         # would make the names local to the whole function.
         import config as _cfg
         if not _cfg.help_seen():
-            from PySide6 import QtCore as _QtCore, QtWidgets as _QtWidgets
-            _fx = _QtWidgets.QGraphicsOpacityEffect(hb)
-            hb.setGraphicsEffect(_fx)
-            _an = _QtCore.QPropertyAnimation(_fx, b"opacity", hb)
-            _an.setDuration(1400)
-            _an.setStartValue(1.0)
-            _an.setKeyValueAt(0.5, 0.45)
-            _an.setEndValue(1.0)
+            from PySide6 import QtCore as _QtCore
+            # the amber breathes in and out of the button's own colour, slowly
+
+            def _mix(a, b, t):
+                return "#%02x%02x%02x" % tuple(
+                    round(a[k] + (b[k] - a[k]) * t) for k in range(3))
+            _amb, _bg = (232, 163, 61), (38, 35, 29)
+            _an = _QtCore.QVariantAnimation(hb)
+            _an.setStartValue(0.06)
+            _an.setKeyValueAt(0.5, 1.0)
+            _an.setEndValue(0.06)
+            _an.setDuration(3200)
             _an.setEasingCurve(_QtCore.QEasingCurve.InOutSine)
             _an.setLoopCount(-1)
+
+            def _paint(t, b=hb):
+                # only the background breathes; the text stays as on every
+                # other button
+                b.setStyleSheet(f"background:{_mix(_bg, _amb, float(t))};")
+            _an.valueChanged.connect(_paint)
             _an.start()
             self._help_pulse = _an
 
             def _seen(*_a, b=hb, an=_an):
                 _cfg.mark_help_seen()
                 an.stop()
-                b.setGraphicsEffect(None)
+                b.setStyleSheet("")
             hb.clicked.connect(_seen)
         hb.clicked.connect(self.help_asked)
         head.addWidget(hb)
@@ -813,6 +830,14 @@ class Main(QWidget):
             self.stack.setCurrentWidget(self.explore)
             return
         units = self.catalog.by_scroll().get(name, [])
+        # a scroll withdrawn from the prize: say why, not what the pipeline
+        # would need (1447, 25/09)
+        if not units and s is not None and not s.eligible and s.note:
+            self.scrolls.sub.setText(
+                f"{s.label} was {s.note[0].lower() + s.note[1:]}. It remains "
+                "in the Grand Prize; nothing is prepared for it on this "
+                "machine.")
+            return
         if not units:
             why = (ROUTE_TEXT.get(s.route, "") if s else "")
             if not config.pipeline_ok():
