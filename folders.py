@@ -60,6 +60,11 @@ def save(paths: list[str]) -> None:
 
 def describe(path: str) -> str:
     """One line about what is in there, without scanning deeply."""
+    # a VC3D project: every patch under paths/ is a surface (25/09)
+    if path.rstrip("/").endswith(".volpkg") and os.path.isdir(os.path.join(path, "paths")):
+        n = sum(1 for d in os.listdir(os.path.join(path, "paths"))
+                if os.path.isfile(os.path.join(path, "paths", d, "meta.json")))
+        return f"VC3D project — {n} patch{'es' if n != 1 else ''}"
     p = os.path.expanduser(path)
     if not os.path.isdir(p):
         return "not found"
@@ -117,7 +122,7 @@ class FoldersPage(QWidget):
 
         blurb = QLabel(
             "Volumen reads the published package over the network on its "
-            "own. If you also have surfaces or ink maps on this computer, "
+            "own. If you also have surfaces, ink maps, a pipeline folder or a VC3D .volpkg on this computer, "
             "point at the folders here and they will show up alongside.")
         blurb.setObjectName("muted")
         blurb.setWordWrap(True)
@@ -154,7 +159,7 @@ class FoldersPage(QWidget):
 
     def add(self) -> None:
         d = QFileDialog.getExistingDirectory(
-            self, "Pick a folder with meshes or ink maps",
+            self, "Pick a folder: meshes, ink maps, a pipeline or a VC3D .volpkg",
             os.path.expanduser("~"))
         if not d or d in self.paths:
             return
