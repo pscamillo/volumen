@@ -258,7 +258,9 @@ def head_ok(url: str) -> bool:
 
 
 def check_network() -> Check:
-    bad = [u for u in (VC3D_RELEASES, TRACKS_HOST) if not head_ok(u)]
+    # github.com, not its API: the API allows 60 calls an hour per address,
+    # and a used-up quota answers 403, which read as "cannot reach" (25/09)
+    bad = [u for u in ("https://github.com", TRACKS_HOST) if not head_ok(u)]
     if bad:
         return Check("network", False, "cannot reach: " + ", ".join(bad))
     return Check("network", True, "github.com and dl.ash2txt.org answer")
@@ -485,6 +487,44 @@ def spiral_python(spiral: str) -> str:
 
 
 def vc3d_asset(tag: str) -> tuple[str, str, int]:
+    """The VC3D release asset, cached a day, so repeated installs do not
+    spend GitHub's API quota; a used-up quota is said as such."""
+    import json, time, urllib.request
+    cache = os.path.expanduser("~/.cache/volumen/vc3d_release.json")
+    try:
+        with open(cache, encoding="utf-8") as f:
+            d = json.load(f)
+        if d.get("tag") == tag and time.time() - d.get("t", 0) < 86400:
+            return tuple(d["asset"])
+    except (OSError, ValueError, KeyError):
+        pass
+    try:
+        asset = _vc3d_asset_api(tag)
+    except Exception:
+        try:                                # /rate_limit does not count
+            with urllib.request.urlopen(urllib.request.Request(
+                    "https://api.github.com/rate_limit",
+                    headers={"User-Agent": "Volumen"}), timeout=15) as r:
+                core = json.load(r)["resources"]["core"]
+        except Exception:
+            core = {}
+        if core.get("remaining") == 0:
+            when = time.strftime("%H:%M", time.localtime(core.get("reset", 0)))
+            raise RuntimeError(
+                "GitHub's API limit for this address is used up (60 calls an "
+                f"hour); it resets at {when}. Try again then — what finished "
+                "is kept, and the install resumes where it stopped.")
+        raise
+    try:
+        os.makedirs(os.path.dirname(cache), exist_ok=True)
+        with open(cache, "w", encoding="utf-8") as f:
+            json.dump({"tag": tag, "t": time.time(), "asset": list(asset)}, f)
+    except OSError:
+        pass
+    return asset
+
+
+def _vc3d_asset_api(tag: str) -> tuple[str, str, int]:
     with urllib.request.urlopen(urllib.request.Request(
             f"{VC3D_RELEASES}/tags/{tag}",
             headers={"User-Agent": "Volumen"}), timeout=30) as r:
