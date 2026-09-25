@@ -123,8 +123,11 @@ SCROLLS: dict[str, Scroll] = {
                "also scanned at 2.403 um — same restriction as PHerc0846A"),
         Scroll("1218", "20250521120456-8.640um-1.2m-116keV-masked.zarr",
                8.640, True, "lasagna"),
+        # withdrawn from First Letters on 24/09/2026: a new 9 um ink recipe
+        # (Youssef Nader) found letters on it; still in the Grand Prize
         Scroll("1447", "20250521151220-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "lasagna"),
+               8.640, False, "lasagna",
+               note="Withdrawn from First Letters on 24 Sep 2026: letters found"),
         Scroll("1545", "20250821151648-9.362um-1.2m-113keV-masked.zarr",
                9.362, True, "lasagna"),
         # already read — demo only, never prize targets

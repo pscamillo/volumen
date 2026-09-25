@@ -7,7 +7,7 @@ volume. Four screens:
 
   Splash    the mark, then Begin
   Intro     what this is, shown once
-  Scrolls   the 23 First Letters volumes, plus the one that has been read
+  Scrolls   the First Letters volumes, plus the one that has been read
   Surfaces  what there is to look at inside one scroll
   Explore   one surface, full resolution, and the question
 
@@ -401,9 +401,10 @@ class ScrollCard(QFrame):
                  n_gate: int = 0, n_ruim: int = 0):
         super().__init__()
         self.scroll_name = s.name
+        withdrawn = (not s.eligible) and s.route != "demo" and bool(s.note)
         # dois niveis de apagado nos vazios: com lasanha e' so' rodar; sem
         # lasanha (ou sem tracks) a superficie vem de um patch do VC3D
-        if s.route == "demo":
+        if s.route == "demo" or withdrawn:
             name = "demo"
         elif n_units:
             name = "card"
@@ -424,8 +425,8 @@ class ScrollCard(QFrame):
         title.setObjectName("h2")
         top.addWidget(title)
         top.addStretch()
-        if s.route == "demo":
-            tag = QLabel("demo")
+        if s.route == "demo" or withdrawn:
+            tag = QLabel("letters found" if withdrawn else "demo")
             tag.setObjectName("badge")
             tag.setStyleSheet(f"color:{INK}; border-color:{INK};")
             top.addWidget(tag)
@@ -435,7 +436,9 @@ class ScrollCard(QFrame):
         sub.setObjectName("muted")
         lay.addWidget(sub)
 
-        if s.route == "demo":
+        if withdrawn:
+            body = s.note + " — still in the Grand Prize"
+        elif s.route == "demo":
             body = ROUTE_TEXT["demo"]
         elif n_units:
             # tres julgamentos, tres contagens: somar tinta, superficie e
@@ -511,6 +514,30 @@ class ScrollsPage(QWidget):
         fb.clicked.connect(self.folders_asked)
         head.addWidget(fb)
         hb = QPushButton("How this works")
+        # until the person has opened it once, a slow pulse says "start
+        # here" — the same breath as Make flattened view; gone after the
+        # first click, for good (25/09). Aliased imports: a plain one here
+        # would make the names local to the whole function.
+        import config as _cfg
+        if not _cfg.help_seen():
+            from PySide6 import QtCore as _QtCore, QtWidgets as _QtWidgets
+            _fx = _QtWidgets.QGraphicsOpacityEffect(hb)
+            hb.setGraphicsEffect(_fx)
+            _an = _QtCore.QPropertyAnimation(_fx, b"opacity", hb)
+            _an.setDuration(1400)
+            _an.setStartValue(1.0)
+            _an.setKeyValueAt(0.5, 0.45)
+            _an.setEndValue(1.0)
+            _an.setEasingCurve(_QtCore.QEasingCurve.InOutSine)
+            _an.setLoopCount(-1)
+            _an.start()
+            self._help_pulse = _an
+
+            def _seen(*_a, b=hb, an=_an):
+                _cfg.mark_help_seen()
+                an.stop()
+                b.setGraphicsEffect(None)
+            hb.clicked.connect(_seen)
         hb.clicked.connect(self.help_asked)
         head.addWidget(hb)
         q = QPushButton("Exit")
@@ -565,7 +592,7 @@ class ScrollsPage(QWidget):
         n_gate = len(gated or {})
         ruins = progress_page.ruim_windows()
         self.sub.setText(
-            f"{ready} surfaces across {len(by)} of the 23 eligible volumes. "
+            f"{ready} surfaces across {len(by)} of the {len(core.ELIGIBLE)} eligible volumes. "
             f"{len(seen)} judged for ink, {n_gate} through the fibre gate. "
             f"The remaining scrolls have nothing prepared yet.")
 
@@ -577,6 +604,11 @@ class ScrollsPage(QWidget):
         order = [s for s in core.DEMO if s.name == "Paris4"]
         order += sorted(core.ELIGIBLE, key=lambda x: (-len(by.get(x.name, [])),
                                                       x.name))
+        # scrolls withdrawn from the prize keep a card: where they went is
+        # news the person needs (1447, letters found, 24 Sep 2026)
+        order += sorted((s for s in core.SCROLLS.values()
+                         if not s.eligible and s.route != "demo" and s.note),
+                        key=lambda x: x.name)
         row = col = 0
         for s in order:
             us = by.get(s.name, [])

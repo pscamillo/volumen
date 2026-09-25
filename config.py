@@ -107,3 +107,36 @@ def umbilici_dir() -> str:
 
 
 migrate()
+
+
+# ---- small state the app keeps for the person (25/09) --------------------
+def _state_file() -> str:
+    import os
+    return os.path.expanduser("~/.config/volumen/state.json")
+
+
+def help_seen() -> bool:
+    """Has the person opened How this works at least once?"""
+    import json
+    try:
+        with open(_state_file(), encoding="utf-8") as f:
+            return bool(json.load(f).get("help_seen"))
+    except (OSError, ValueError):
+        return False
+
+
+def mark_help_seen() -> None:
+    import json, os
+    p = _state_file()
+    try:
+        with open(p, encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        d = {}
+    d["help_seen"] = True
+    try:
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(d, f, indent=1)
+    except OSError:
+        pass

@@ -255,6 +255,7 @@ class SetupDialog(QDialog):
     def prepare_scroll(self) -> None:
         rolo = self.scroll.currentData()
         self.pending = rolo
+        self.umb_depth = 0
         self.axis_warn = []
         self.axis_box.setVisible(False)
         self.mode = "scroll"
@@ -291,6 +292,20 @@ class SetupDialog(QDialog):
             if m and self.mode == "scroll":
                 self.sub.setVisible(False)
                 self.step.setText(line.split("== ", 1)[1])
+            # the umbilicus reads the CT slice by slice, one line per 100 z:
+            # turn that into progress, or half an hour looks frozen (25/09)
+            if self.mode == "scroll":
+                mu = re.search(r"over z 0\.\.(\d+)", line)
+                if mu:
+                    self.umb_depth = int(mu.group(1))
+                mz = re.match(r"\s*(\d+)\s+(?:too little|\d)", line)
+                if mz and getattr(self, "umb_depth", 0):
+                    z, d = int(mz.group(1)), self.umb_depth
+                    pct = min(100, int(100 * z / d))
+                    self.sub.setVisible(True)
+                    self.sub.setValue(pct)
+                    self.step.setText(f"umbilicus: slice {z:,} of {d:,} — "
+                                      f"about {pct}%")
             if m and self.mode == "install":
                 name = m.group(1)
                 if name in STEPS:

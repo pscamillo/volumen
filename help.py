@@ -59,7 +59,7 @@ GROUPS = [
 
     ("Using the app", [
         ("The scroll grid",
-         "One card per eligible scroll, plus PHerc Paris 4 for calibration. "
+         "One card per eligible scroll, plus PHerc Paris 4 for calibration and, at the end, any scroll withdrawn from the prize, with the reason. "
          "Bright cards have surfaces; the numbers say how many, how many were "
          "judged for ink and how many went through the gate. Dimmed cards "
          "have nothing yet, in two shades: the lighter has lasagna published and only needs the pipeline run; the darker has none, and its surfaces come from VC3D."

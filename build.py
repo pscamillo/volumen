@@ -326,12 +326,20 @@ class BuildPage(QWidget):
             self.blurb.setText(f"{script} is not in {self.root} yet.")
             self.start_btn.setEnabled(False)
             return
-        self.pick.addItems(lasagna_scrolls(self.root))
+        ready = lasagna_scrolls(self.root)
+        self.pick.addItems(ready)
+        # an empty Scroll box says nothing by itself (25/09)
+        empty = ""
+        if not ready:
+            empty = ("  No scroll is prepared in this pipeline yet: " + (
+                "Prepare another scroll… below fetches one."
+                if os.path.isfile(os.path.join(self.root, "rolos.sh"))
+                else "add one to its scroll table."))
         self.blurb.setText(
             f"Runs the minimal route with lasagna from {self.root}. Each "
             f"window is fitted, flattened, rendered and run through the "
             f"ink model; its fibre panel lands in the gate queue. Windows "
-            f"are drawn from the grid without repetition.")
+            f"are drawn from the grid without repetition.{empty}")
         self.start_btn.setEnabled(self.proc is None and self.pick.count() > 0)
 
     def toggle_log(self, on: bool) -> None:
