@@ -139,6 +139,12 @@ class BuildPage(QWidget):
             self.route.addItem(label, key)
         self.route.currentIndexChanged.connect(self.mode_changed)
         row.addSpacing(18)
+        # which pipeline, when Folders holds more than one (25/09)
+        self.pipe_lbl = QLabel("Pipeline")
+        self.pipe = QComboBox()
+        self.pipe.currentIndexChanged.connect(self.pipe_changed)
+        row.addWidget(self.pipe_lbl)
+        row.addWidget(self.pipe)
         row.addWidget(QLabel("Scroll"))
         self.pick = QComboBox()
         self.pick.setMinimumWidth(120)
@@ -248,10 +254,31 @@ class BuildPage(QWidget):
         self.gained = set()
         self.news.setVisible(False)
 
+    def pipe_changed(self, *_):
+        r = self.pipe.currentData()
+        if r and r != self.root:
+            self.chosen_root = r
+            self.refresh()
+
     def refresh(self) -> None:
         from PySide6.QtCore import QTimer
         QTimer.singleShot(50, self.check_lasagna)
-        self.root = pipeline_root()
+        roots = config.pipeline_roots()
+        chosen = getattr(self, "chosen_root", "")
+        self.root = chosen if chosen in roots else (roots[0] if roots else "")
+        self.pipe.blockSignals(True)
+        self.pipe.clear()
+        for r in roots:
+            # an installed pipeline's root is <dest>/work: name it by <dest>
+            name = os.path.basename(os.path.dirname(r)) \
+                if os.path.basename(r) == "work" else os.path.basename(r)
+            self.pipe.addItem(name, r)
+            self.pipe.setItemData(self.pipe.count() - 1, r, Qt.ToolTipRole)
+        if self.root in roots:
+            self.pipe.setCurrentIndex(roots.index(self.root))
+        self.pipe.blockSignals(False)
+        for w in (self.pipe_lbl, self.pipe):
+            w.setVisible(len(roots) > 1)
         if not self.root:
             self.pick.clear()
             needs = "".join(f"<li><b>{k}</b> — {v}</li>"
@@ -351,6 +378,7 @@ class BuildPage(QWidget):
         self.tick.start(1000)
         self.start_btn.setEnabled(False)
         self.route.setEnabled(False)
+        self.pipe.setEnabled(False)
         self.stop_btn.setEnabled(True)
         self.stop_btn.setText("Stop")
         self.status.setText(f"Running · PHerc{self.scroll}")
@@ -448,6 +476,7 @@ class BuildPage(QWidget):
         self.status.setText(f"{was.capitalize()} · PHerc{self.scroll}")
         self.proc = None
         self.route.setEnabled(True)
+        self.pipe.setEnabled(True)
         self.start_btn.setEnabled(self.pick.count() > 0)
         self.stop_btn.setEnabled(False)
         self.stop_btn.setText("Stop")
