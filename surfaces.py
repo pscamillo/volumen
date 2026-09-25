@@ -65,7 +65,7 @@ def read_findings(cache: core.Cache) -> dict[str, str]:
                 continue
             key = r.get("unit") or f"{r.get('scroll')}/{r.get('segment')}"
             if r.get("verdict"):
-                out[key] = r["verdict"]
+                out[key] = config.verdict_en(r["verdict"])
     return out
 
 

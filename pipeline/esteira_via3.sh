@@ -19,7 +19,7 @@ source "$R/rolos.sh"
 rolo_config "$ROLO" || { echo "scroll $ROLO not in rolos.sh"; exit 1; }
 UMB="$VOLUMEN_UMBILICI/PHerc${ROLO}_umbilicus.json"
 [ -s "$UMB" ] || { echo "no umbilicus for $ROLO: $UMB (setup_pipeline.py scroll)"; exit 1; }
-[ "$LAS" = "SEM-LASAGNA" ] && { echo "$ROLO has no published lasagna; the geometric route is not in this build"; exit 1; }
+[ "$LAS" = "SEM-LASAGNA" ] && { echo "$ROLO has no published lasagna yet; grow patches in VC3D and add the .volpkg under Folders"; exit 1; }
 mkdir -p fila_gate
 CSV=esteira_${ROLO}.csv
 [ -f "$CSV" ] || echo "rolo,z0,wrap,dir,pol,n_comp,n_void,n_sinal,pitch_p,row_org,px_surv" > "$CSV"

@@ -140,3 +140,17 @@ def mark_help_seen() -> None:
             json.dump(d, f, indent=1)
     except OSError:
         pass
+
+
+# verdicts written by the author's earlier triage tool, read as the app's words
+LEGACY_VERDICT = {
+    "nada": "nothing but texture",
+    "textura suspeita": "marks, but no shapes",
+    "possivel letra": "shapes that could be letters",
+    "letra clara": "clear letters",
+}
+
+
+def verdict_en(v):
+    """Every reader of FINDINGS goes through here."""
+    return LEGACY_VERDICT.get(v, v)

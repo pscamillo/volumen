@@ -86,7 +86,7 @@ def unit_state(cache: core.Cache) -> dict:
             continue
         s = st.setdefault(u, {"ink": None, "surface": None, "gated": False})
         if r.get("verdict"):
-            s["ink"] = r["verdict"]
+            s["ink"] = config.verdict_en(r["verdict"])
         if r.get("surface"):
             s["surface"] = r["surface"]
         if r.get("origin") == "gate.py":

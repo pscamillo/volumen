@@ -832,7 +832,7 @@ class ExplorePage(QWidget):
         self.cut_btn.setEnabled(self.cutter is None)
         self.warn.setText("")
         prev = self.previous_verdict(v.key)
-        self.sel = prev.get("verdict")
+        self.sel = config.verdict_en(prev.get("verdict"))
         self.sel_surface = prev.get("surface")
         # the same surface shown again (its cuts just made) keeps what was
         # opened; only a new surface starts from nothing (25/09: the ink
@@ -1392,7 +1392,7 @@ class ExplorePage(QWidget):
                     except json.JSONDecodeError:
                         continue
                     if r.get("unit"):
-                        seen[r["unit"]] = r.get("verdict")
+                        seen[r["unit"]] = config.verdict_en(r.get("verdict"))
         n = len(seen)
         hits = sum(1 for v in seen.values() if v in HITS)
         self.counter.setText(

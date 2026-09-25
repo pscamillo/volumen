@@ -115,6 +115,7 @@ def metrics(scroll: str, window: int, wrap: str, root: str = "") -> list[dict]:
     out = []
     with open(p, encoding="utf-8") as f:
         for r in csv.DictReader(f):
+            r.setdefault("dir_equipe", r.get("dir"))  # esteira_via3 writes 'dir'
             if (r.get("rolo") == scroll and r.get("z0") == str(window)
                     and r.get("wrap") == w):
                 out.append(r)
@@ -314,7 +315,7 @@ class GatePage(QWidget):
             for r in rows:
                 html.append(
                     f"<tr><td>{ {'fwd': 'forward', 'rev': 'reverse'}.get(r['dir_equipe'], r['dir_equipe'])}</td>"
-                    f"<td>{r['pol']}</td>"
+                    f"<td>{ {'escura': 'dark', 'clara': 'light'}.get(r.get('pol'), r.get('pol') or '—') }</td>"
                     f"<td>{r['n_comp']}</td><td>{r['n_void']}</td>"
                     f"<td>{r['n_sinal']}</td><td>{r['pitch_p'] or '—'}</td>"
                     f"<td>{r['px_surv']}</td></tr>")

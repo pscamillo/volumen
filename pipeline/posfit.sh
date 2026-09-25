@@ -85,7 +85,7 @@ for WR in ['020','040','060','080','100']:
         os.makedirs(f'{R}/fila_olho', exist_ok=True)
         e = (np.clip((p-0.25)/0.5, 0, 1)*255).astype(np.uint8)
         tifffile.imwrite(f'{R}/fila_olho/{ROLO}_z{Z0}_w{WR}_{dn}.tif', e)
-        for pol, r in [('escura', raw), ('clara', raw.max()-raw)]:
+        for pol, r in [('dark', raw), ('light', raw.max()-raw)]:
             mask, rep = vetoes.apply_vetoes(p, st, th=0.60, min_area=300,
                                             valid=valid, raw=r, mid=(8,20), voxel_um=float(VOX))
             row = [ROLO, Z0, WR, dn, pol, rep.get('n_components'), rep.get('n_after_void_veto'),

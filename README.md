@@ -39,8 +39,9 @@ install already has what PySide6 needs; on a minimal system add
 
 ## What you can do
 
-- **Scrolls** — the 23 First Letters volumes. The eight with published
-  surfaces open; the others tell you how to bring your own, or to make them.
+- **Scrolls** — the volumes eligible for First Letters, as the prize page
+  lists them; PHerc1447 stays on the grid, withdrawn on 24 Sep 2026 after
+  letters were found in it. Scrolls with published surfaces open; the others tell you how to bring your own, or to make them.
 - **Explore** one surface: the flattened CT, the ink maps (forward and
   reverse, where published), three cuts through the raw CT with the
   surface drawn on them, a 1 mm bar and a letter-sized box for scale.
@@ -49,7 +50,7 @@ install already has what PySide6 needs; on a minimal system add
   your answers.
 - **Bring your own surfaces**: point *Folders* at any tifxyz folder, or at
   a VC3D `.volpkg` — patches grown in GrowPatch show up alongside.
-- **Make surfaces** (with the pipeline installed): pick a route, a scroll
+- **Make surfaces** (with the pipeline installed): pick a scroll
   and how many windows; new surfaces join the catalogue as each window
   finishes, and the fibre gate queues their panels for judgement.
 
@@ -99,9 +100,10 @@ from VC3D, the [ink model](https://github.com/ScrollPrize/villa/tree/main/ink-de
 to the sheet material, flatten one winding at a time, render the CT along
 each surface, run the ink model in both directions, and file the results
 where the rest of the app reads them. This is the chain behind the
-published package. Two routes: **with lasagna** uses the
-team's published sheet-direction volumes; **geometric** (experimental,
-validated on one scroll) computes them from the raw CT instead.
+published package. It follows the sheets through the team's published
+sheet-direction volumes ("lasagna"), so it runs on the scrolls that have
+them; for the others, grow patches in VC3D and point **Folders** at the
+`.volpkg`.
 
 It needs, on Linux or WSL2:
 
