@@ -183,14 +183,17 @@ class Splash(QWidget):
         lay.setAlignment(Qt.AlignCenter)
         lay.setSpacing(18)
 
-        self.mark = Mark(132)
+        # opening screen / About: sizes in one place (24/09: 132 / h1 / 6)
+        SPLASH_MARK, SPLASH_NAME_PX, SPLASH_SPACING = 176, 46, 9
+        self.mark = Mark(SPLASH_MARK)
         lay.addWidget(self.mark, alignment=Qt.AlignHCenter)
 
         self.name = QLabel(APP_NAME)
         self.name.setObjectName("h1")
+        self.name.setStyleSheet(f"font-size: {SPLASH_NAME_PX}px;")
         self.name.setAlignment(Qt.AlignCenter)
         f: QFont = self.name.font()
-        f.setLetterSpacing(QFont.AbsoluteSpacing, 6)
+        f.setLetterSpacing(QFont.AbsoluteSpacing, SPLASH_SPACING)
         self.name.setFont(f)
 
         lay.addWidget(self.name)
