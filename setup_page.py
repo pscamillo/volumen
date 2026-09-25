@@ -126,7 +126,6 @@ class SetupDialog(QDialog):
         # the axis check (25/09): after a scroll is prepared, before it can
         # be fitted — the automatic umbilicus can land off the scroll with a
         # good score (0826)
-        from PySide6.QtWidgets import QWidget, QVBoxLayout
         self.axis_box = QWidget()
         ab = QVBoxLayout(self.axis_box)
         ab.setContentsMargins(0, 10, 0, 0)
