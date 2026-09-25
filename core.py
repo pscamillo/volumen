@@ -142,6 +142,85 @@ SCROLLS: dict[str, Scroll] = {
 ELIGIBLE = [s for s in SCROLLS.values() if s.eligible]
 DEMO = [s for s in SCROLLS.values() if s.route == "demo"]
 
+
+# ---- lasagna published in the open-data bucket (25/09) ------------------
+# The team publishes lasagna when it is ready, so which scrolls have it is
+# asked of the bucket, not written here: at most once a day, cached, and
+# without the network the last answer (or the table above) stands.
+_LAS_BUCKET = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
+LASAGNA_CACHE = os.path.expanduser("~/.cache/volumen/lasagna.json")
+
+
+def _lasagna_id(name: str) -> str | None:
+    """Newest lasagna directory for PHerc<name>, None if there is none.
+    Network errors propagate: an unknown answer is not a "no"."""
+    import re, urllib.request
+    url = (f"{_LAS_BUCKET}/?list-type=2&prefix=PHerc{name}/representations/"
+           "predictions/lasagna/&delimiter=/")
+    with urllib.request.urlopen(urllib.request.Request(
+            url, headers={"User-Agent": "Volumen"}), timeout=20) as r:
+        xml = r.read().decode()
+    ids = re.findall(r"lasagna/([0-9]+-lasagna-[0-9]+)/</Prefix>", xml)
+    return sorted(ids)[-1] if ids else None
+
+
+def lasagna_published(network: bool = True,
+                      max_age_h: float = 24.0) -> dict[str, str] | None:
+    """{scroll: lasagna id} for the eligible scrolls that have tracks.
+    None when nothing is known yet (no cache and no network)."""
+    import json, time
+    cached = None
+    try:
+        with open(LASAGNA_CACHE, encoding="utf-8") as f:
+            cached = json.load(f)
+    except (OSError, ValueError):
+        pass
+    fresh = cached and time.time() - cached.get("checked", 0) < max_age_h * 3600
+    if fresh or not network:
+        return cached["scrolls"] if cached else None
+    names = [s.name for s in ELIGIBLE if s.route in ("lasagna", "no lasagna")]
+    try:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(8) as ex:
+            got = dict(zip(names, ex.map(_lasagna_id, names)))
+    except Exception:
+        return cached["scrolls"] if cached else None
+    scrolls = {k: v for k, v in got.items() if v}
+    try:
+        os.makedirs(os.path.dirname(LASAGNA_CACHE), exist_ok=True)
+        tmp = LASAGNA_CACHE + ".part"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump({"checked": time.time(), "scrolls": scrolls}, f, indent=1)
+        os.replace(tmp, LASAGNA_CACHE)
+    except OSError:
+        pass
+    return scrolls
+
+
+def apply_lasagna(published: dict[str, str] | None) -> list[str]:
+    """Reclassify scrolls by what the bucket says; returns the ones that
+    gained lasagna. Scroll is frozen, so each is replaced by a copy, in
+    place in ELIGIBLE and SCROLLS."""
+    import dataclasses
+    if published is None:
+        return []
+    gained = []
+    for i, s in enumerate(ELIGIBLE):
+        if s.route not in ("lasagna", "no lasagna"):
+            continue
+        r = "lasagna" if s.name in published else "no lasagna"
+        if r != s.route:
+            if r == "lasagna":
+                gained.append(s.name)
+            ns = dataclasses.replace(s, route=r)
+            ELIGIBLE[i] = ns
+            SCROLLS[s.name] = ns
+    return gained
+
+
+# at import: the cached answer only, never the network
+apply_lasagna(lasagna_published(network=False))
+
 # Typical Greek letter height in these scrolls, in micrometres. Used to draw
 # a size reference: without one it is easy to call something a letter when it
 # is off by a factor of five.

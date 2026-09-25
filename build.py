@@ -34,7 +34,7 @@ import signal
 import subprocess
 import time
 
-from PySide6.QtCore import QProcess, QProcessEnvironment, QTimer, Signal
+from PySide6.QtCore import QProcess, QProcessEnvironment, Qt, QTimer, Signal
 from PySide6.QtWidgets import (QComboBox, QHBoxLayout, QLabel,
                                QPlainTextEdit, QPushButton, QSpinBox,
                                QVBoxLayout, QWidget)
@@ -190,6 +190,14 @@ class BuildPage(QWidget):
             " padding: 10px 14px;")
         self.warning.setVisible(False)
         outer.addWidget(self.warning)
+        # a scroll that gained lasagna since the last check (once a day)
+        self.news = QLabel("")
+        self.news.setWordWrap(True)
+        self.news.setStyleSheet("color: #e8a33d;")
+        self.news.setVisible(False)
+        self.news.setTextFormat(Qt.RichText)
+        self.news.linkActivated.connect(self.dismiss_news)
+        outer.addWidget(self.news)
 
         self.status = QLabel("Idle.")
         self.status.setObjectName("h2")
@@ -211,7 +219,38 @@ class BuildPage(QWidget):
         self.refresh()
 
     # -- setup ---------------------------------------------------------
+    def check_lasagna(self) -> None:
+        """Scrolls that gained lasagna this session stay announced until
+        they are prepared in this pipeline."""
+        if not hasattr(self, "gained"):
+            self.gained = set()
+        self.gained |= set(core.apply_lasagna(core.lasagna_published()))
+        self.gained -= getattr(self, "dismissed", set())
+        if self.root:
+            self.gained -= set(lasagna_scrolls(self.root))
+        if not self.gained:
+            self.news.setVisible(False)
+            return
+        names = ", ".join(f"PHerc{n}" for n in sorted(self.gained))
+        if not self.root:
+            how = "Set up the pipeline… and prepare it"
+        elif os.path.isfile(os.path.join(self.root, "rolos.sh")):
+            how = "Prepare another scroll… adds it here"
+        else:
+            how = "add it to this pipeline's scroll table"
+        self.news.setText(f"Lasagna is now published for {names}. {how}, "
+                          "and it can be fitted like the others.  "
+                          "<a href='dismiss' style='color:#8a8272'>dismiss</a>")
+        self.news.setVisible(True)
+
+    def dismiss_news(self, *_):
+        self.dismissed = getattr(self, "dismissed", set()) | self.gained
+        self.gained = set()
+        self.news.setVisible(False)
+
     def refresh(self) -> None:
+        from PySide6.QtCore import QTimer
+        QTimer.singleShot(50, self.check_lasagna)
         self.root = pipeline_root()
         if not self.root:
             self.pick.clear()

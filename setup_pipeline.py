@@ -664,6 +664,8 @@ def step_pipeline(dest: str) -> None:
 
 
 def scroll(dest: str, rolo: str) -> None:
+    # lasagna published after the install counts: rewrite the table first
+    write_rolos(dest)
     """tracks (.dbm), umbilicus, render template for one scroll."""
     global LOG
     LOG = os.path.join(dest, "setup.log")

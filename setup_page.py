@@ -141,12 +141,10 @@ class SetupDialog(QDialog):
         """Eligible scrolls with published lasagna, not yet prepared here."""
         self.scroll.clear()
         work = os.path.join(self.dest, "work")
-        rolos = os.path.join(work, "rolos.sh")
-        has_las = None
-        if os.path.isfile(rolos):
-            txt = open(rolos, encoding="utf-8").read()
-            has_las = {m.group(1) for m in re.finditer(
-                r"^\s*([0-9A-Za-z]+)\)\s+VOLID=(?!.*LAS=SEM-LASAGNA)", txt, re.M)}
+        # which scrolls have lasagna: the bucket (cached a day), not the
+        # rolos.sh written at install — lasagna appears after installs
+        pub = core.lasagna_published()
+        has_las = set(pub) if pub is not None else None
         for s in core.ELIGIBLE:
             if has_las is not None and s.name not in has_las:
                 continue
