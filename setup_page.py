@@ -123,6 +123,37 @@ class SetupDialog(QDialog):
         srow.addStretch()
         lay.addLayout(srow)
 
+        # the axis check (25/09): after a scroll is prepared, before it can
+        # be fitted — the automatic umbilicus can land off the scroll with a
+        # good score (0826)
+        from PySide6.QtWidgets import QWidget, QVBoxLayout
+        self.axis_box = QWidget()
+        ab = QVBoxLayout(self.axis_box)
+        ab.setContentsMargins(0, 10, 0, 0)
+        self.axis_text = QLabel("")
+        self.axis_text.setWordWrap(True)
+        self.axis_text.setTextFormat(Qt.RichText)
+        ab.addWidget(self.axis_text)
+        self.axis_img = QLabel()
+        self.axis_img.setAlignment(Qt.AlignCenter)
+        ab.addWidget(self.axis_img)
+        arow = QHBoxLayout()
+        self.axis_ok = QPushButton("Looks centred")
+        self.axis_ok.setObjectName("primary")
+        self.axis_own = QPushButton("Use my own umbilicus file…")
+        self.axis_later = QPushButton("Not now")
+        for b in (self.axis_ok, self.axis_own, self.axis_later):
+            arow.addWidget(b)
+        arow.addStretch()
+        ab.addLayout(arow)
+        self.axis_ok.clicked.connect(self.axis_accept)
+        self.axis_own.clicked.connect(self.axis_own_file)
+        self.axis_later.clicked.connect(lambda: self.axis_box.setVisible(False))
+        self.axis_box.setVisible(False)
+        lay.addWidget(self.axis_box)
+        self.pending = ""
+        self.axis_warn: list[str] = []
+
         # buttons
         brow = QHBoxLayout()
         brow.addStretch()
@@ -221,6 +252,9 @@ class SetupDialog(QDialog):
 
     def prepare_scroll(self) -> None:
         rolo = self.scroll.currentData()
+        self.pending = rolo
+        self.axis_warn = []
+        self.axis_box.setVisible(False)
         self.mode = "scroll"
         self.step.setText(f"Preparing PHerc{rolo}: tracks, umbilicus, template…")
         self._spawn(["scroll", self.dest, rolo])
@@ -263,6 +297,8 @@ class SetupDialog(QDialog):
                     self.bar.setValue(idx)
                     self.step.setText(f"{name}: {'done' if done else 'working…'}")
                     self.sub.setVisible(False)
+            if "!! axis" in line:
+                self.axis_warn.append(line.split("!! ", 1)[1].strip())
             if line.startswith("!!"):
                 self.step.setText(line)
 
@@ -277,9 +313,15 @@ class SetupDialog(QDialog):
                               "making surfaces.")
             self.scroll_btn.setEnabled(True)
             self.installed.emit(self.dest)
+        elif code == 0 and self.mode in ("scroll", "axis") and not os.path.isfile(
+                os.path.join(self.dest, "work", f"render_{self.pending}.sh")):
+            self.show_axis()
+            self.scroll_btn.setEnabled(True)
         elif code == 0:
-            self.step.setText(f"PHerc{self.scroll.currentData()} ready: close "
-                              "this window and pick it under Make surfaces.")
+            self.axis_box.setVisible(False)
+            self.step.setText(f"PHerc{self.pending or self.scroll.currentData()} "
+                              "ready: close this window and pick it under "
+                              "Make surfaces.")
             self.scroll_btn.setEnabled(True)
             self.fill_scrolls()
             self.installed.emit(self.dest)
@@ -289,6 +331,59 @@ class SetupDialog(QDialog):
             self.go.setEnabled(True)
             self.scroll_btn.setEnabled(os.path.isfile(
                 os.path.join(self.dest, ".pipeline.done")))
+
+    # -- the axis check ---------------------------------------------------
+    def show_axis(self) -> None:
+        from PySide6.QtGui import QPixmap
+        r = self.pending
+        pm = QPixmap(os.path.join(self.dest, "umbilici", f"PHerc{r}_check.png"))
+        if not pm.isNull():
+            self.axis_img.setPixmap(pm.scaledToWidth(min(900, pm.width()),
+                                                     Qt.SmoothTransformation))
+        warn = ""
+        if self.axis_warn:
+            warn = ("<br><span style='color:#e8a33d'>" + "; ".join(
+                w[0].upper() + w[1:] for w in self.axis_warn) + ".</span>")
+        self.axis_text.setText(
+            f"<b>Check the axis before fitting PHerc{r}.</b> The amber cross is "
+            "the umbilicus the fit will wind around, on three slices a quarter, "
+            "half and three quarters up the scroll. It should sit in the middle "
+            "of the rings on all three. On crushed scrolls the automatic one can "
+            "land off centre, or outside the scroll, with a good score." + warn)
+        self.axis_box.setVisible(True)
+        self.step.setText(f"PHerc{r}: tracks and umbilicus ready — check the "
+                          "axis below.")
+        self.adjustSize()
+
+    def axis_accept(self) -> None:
+        self.mode = "accept"
+        self.step.setText(f"PHerc{self.pending}: writing the render template…")
+        self._spawn(["accept", self.dest, self.pending])
+
+    def axis_own_file(self) -> None:
+        import json, shutil
+        from PySide6.QtWidgets import QFileDialog
+        f, _ = QFileDialog.getOpenFileName(
+            self, "An umbilicus file (JSON with control_points x, y, z)",
+            os.path.expanduser("~"), "JSON (*.json)")
+        if not f:
+            return
+        try:
+            pts = json.load(open(f, encoding="utf-8"))["control_points"]
+            assert pts and all(k in pts[0] for k in ("x", "y", "z"))
+        except Exception:                             # noqa: BLE001
+            self.step.setText("That file is not an umbilicus: it needs "
+                              "control_points with x, y and z.")
+            return
+        dst = os.path.join(self.dest, "umbilici", f"PHerc{self.pending}_umbilicus.json")
+        auto = dst[:-5] + "_auto.json"
+        if os.path.isfile(dst) and not os.path.isfile(auto):
+            shutil.copy2(dst, auto)                    # keep the automatic one
+        shutil.copy2(f, dst)
+        self.axis_warn = []
+        self.mode = "axis"
+        self.step.setText("Drawing the axis check with your umbilicus…")
+        self._spawn(["axis", self.dest, self.pending])
 
     def reject(self) -> None:
         if self.proc is not None:

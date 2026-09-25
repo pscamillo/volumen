@@ -12,6 +12,8 @@ app/ESTEIRA_INSTALADOR.md (23/09/2026).
     uv run setup_pipeline.py install <dest> [--vc3d stable|latest] [--yes]
                                                     the environment (slice 2)
     uv run setup_pipeline.py scroll  <dest> <ROLO>  tracks + umbilicus (slice 3)
+    uv run setup_pipeline.py axis    <dest> <ROLO>  redraw the axis check figure
+    uv run setup_pipeline.py accept  <dest> <ROLO>  axis looked at: render template
 
 Checks, in the order they cost least, the first failure stops everything:
   1 system     Linux or WSL2 (Triton + CUDA run nowhere else)
@@ -664,11 +666,14 @@ def step_pipeline(dest: str) -> None:
 
 
 def scroll(dest: str, rolo: str) -> None:
-    # lasagna published after the install counts: rewrite the table first
-    write_rolos(dest)
-    """tracks (.dbm), umbilicus, render template for one scroll."""
+    """tracks (.dbm), umbilicus and its check figure for one scroll. The
+    render template waits for `accept`, after a person has looked at the
+    axis: on crushed scrolls the automatic one can land on the edge with a
+    good score (0826, 24/09)."""
     global LOG
     LOG = os.path.join(dest, "setup.log")
+    # lasagna published after the install counts: rewrite the table first
+    write_rolos(dest)
     sys.path.insert(0, HERE)
     import core
     s = core.SCROLLS.get(rolo)
@@ -701,7 +706,83 @@ def scroll(dest: str, rolo: str) -> None:
             cwd=work, what="gera_umbilicus")
     else:
         log("== umbilicus: already here")
-    # render template
+    png = umbilicus_check(dest, rolo)
+    if os.path.isfile(os.path.join(work, f"render_{rolo}.sh")):
+        log(f"{rolo} ready: bash {work}/esteira_via3.sh {rolo} 1")
+    else:
+        log(f"CHECK {png}")
+        log(f"{rolo}: look at the axis — it should sit in the middle of the "
+            f"rings on all three slices — then: setup_pipeline.py accept "
+            f"{dest} {rolo} (or put your own PHerc{rolo}_umbilicus.json in "
+            f"umbilici/ and run: setup_pipeline.py axis {dest} {rolo})")
+
+
+def _png(path: str, rgb) -> None:
+    """Minimal RGB PNG writer: numpy in, no Pillow needed."""
+    import struct, zlib
+    h, w, _ = rgb.shape
+    raw = b"".join(b"\x00" + rgb[i].tobytes() for i in range(h))
+
+    def chunk(t, d):
+        return (struct.pack(">I", len(d)) + t + d
+                + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff))
+    with open(path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n"
+                + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+                + chunk(b"IDAT", zlib.compress(raw, 6)) + chunk(b"IEND", b""))
+
+
+def umbilicus_check(dest: str, rolo: str) -> str:
+    """Three CT slices (a quarter, half and three quarters up the scroll)
+    with the umbilicus marked in amber: umbilici/PHerc<ROLO>_check.png."""
+    import json
+    import numpy as np
+    sys.path.insert(0, HERE)
+    import core
+    s = core.SCROLLS[rolo]
+    umb = os.path.join(dest, "umbilici", f"PHerc{rolo}_umbilicus.json")
+    pts = sorted((p["z"], p["x"], p["y"])
+                 for p in json.load(open(umb))["control_points"])
+    zz, xx, yy = map(np.array, zip(*pts))
+    log("== check: three slices with the axis marked")
+    arr = core.open_volume(s, 2)                 # level 2: 4x per axis
+    depth = arr.shape[0] * 4
+    tiles = []
+    for frac in (0.25, 0.5, 0.75):
+        z = int(depth * frac)
+        sl = np.asarray(arr[z // 4]).astype(np.float32)[::2, ::2]   # 8x
+        nz = sl[sl > 0]
+        lo, hi = np.percentile(nz, (1, 99)) if nz.size else (0.0, 1.0)
+        g = np.clip((sl - lo) / (hi - lo + 1e-6) * 255, 0, 255).astype(np.uint8)
+        rgb = np.stack([g, g, g], -1)
+        x, y = np.interp(z, zz, xx) / 8, np.interp(z, zz, yy) / 8
+        H, W = g.shape
+        Y, X = np.ogrid[:H, :W]
+        r = np.hypot(X - x, Y - y)
+        mark = ((r > 12) & (r < 16)) | ((abs(X - x) < 2) & (abs(Y - y) < 30)) \
+            | ((abs(Y - y) < 2) & (abs(X - x) < 30))
+        yi, xi = int(round(y)), int(round(x))
+        if not (0 <= yi < H and 0 <= xi < W
+                and sl[max(0, yi - 3):yi + 4, max(0, xi - 3):xi + 4].max() > 0):
+            log(f"!! axis outside the scroll at z {z}")
+        rgb[mark] = (240, 170, 60)
+        tiles.append(rgb)
+    h = max(t.shape[0] for t in tiles)
+    tiles = [np.pad(t, ((0, h - t.shape[0]), (0, 12), (0, 0))) for t in tiles]
+    out = os.path.join(dest, "umbilici", f"PHerc{rolo}_check.png")
+    _png(out, np.ascontiguousarray(np.concatenate(tiles, 1), dtype=np.uint8))
+    return out
+
+
+def accept(dest: str, rolo: str) -> None:
+    """The person looked at the axis: write the render template, which is
+    what lists the scroll under Make surfaces."""
+    global LOG
+    LOG = os.path.join(dest, "setup.log")
+    sys.path.insert(0, HERE)
+    import core
+    s = core.SCROLLS[rolo]
+    work = os.path.join(dest, "work")
     tpl = open(os.path.join(work, "render_template.sh")).read()
     tpl = (tpl.replace("__ROLO__", rolo).replace("__VOL__", core.http_url(s.volume_url))
               .replace("__PX__", f"{s.voxel_um * 1e-4:.6g}"))
@@ -737,6 +818,10 @@ def main() -> int:
     p.add_argument("--vc3d", choices=("stable", "latest"), default="stable")
     p.add_argument("--scroll", action="append", default=[])
     p.add_argument("--yes", action="store_true")
+    for name in ("axis", "accept"):
+        q = sub.add_parser(name)
+        q.add_argument("dest")
+        q.add_argument("rolo")
     p = sub.add_parser("scroll")
     p.add_argument("dest")
     p.add_argument("rolo")
@@ -781,6 +866,18 @@ def main() -> int:
                   "run it per scroll when it lands.")
         return 0
 
+    if a.cmd in ("axis", "accept"):
+        d = os.path.abspath(os.path.expanduser(a.dest))
+        globals()["LOG"] = os.path.join(d, "setup.log")
+        try:
+            if a.cmd == "axis":
+                print(umbilicus_check(d, a.rolo))
+            else:
+                accept(d, a.rolo)
+        except Exception as e:                      # noqa: BLE001
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+        return 0
     if a.cmd == "scroll":
         dest = os.path.expanduser(a.dest)
         if not done(dest, "pipeline"):

@@ -117,7 +117,9 @@ GROUPS = [
          "and per-scroll inputs. <b>Set up the pipeline…</b> checks this "
          "machine, shows what it would download, and installs only after "
          "you say yes; <b>Prepare another scroll…</b> then fetches each "
-         "scroll's inputs."),
+         "scroll's inputs, and ends by showing the scroll's axis on three "
+         "slices: accept it only if it sits in the middle of the rings on all "
+         "three, or give your own umbilicus file."),
 
         ("The fibre gate",
          "The queue of panels the pipeline made, one at a time. Judge with "
