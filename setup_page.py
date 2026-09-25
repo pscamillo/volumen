@@ -174,7 +174,10 @@ class SetupDialog(QDialog):
         # which scrolls have lasagna: the bucket (cached a day), not the
         # rolos.sh written at install — lasagna appears after installs
         pub = core.lasagna_published()
-        has_las = set(pub) if pub is not None else None
+        has_las = None
+        if pub is not None:
+            core.apply_lasagna(pub)       # lasagna AND tracks: ready to fit
+            has_las = {s.name for s in core.ELIGIBLE if s.route == "lasagna"}
         for s in core.ELIGIBLE:
             if has_las is not None and s.name not in has_las:
                 continue
@@ -324,10 +327,13 @@ class SetupDialog(QDialog):
             self.scroll_btn.setEnabled(True)
             self.fill_scrolls()
             self.installed.emit(self.dest)
-        else:
+        elif self.mode == "install":
             self.step.setText("Stopped — see the log. What finished is kept; "
                               "Proceed again resumes.")
             self.go.setEnabled(True)
+        else:
+            self.step.setText("Stopped — see the log. What finished is kept; "
+                              "Prepare this scroll again resumes.")
             self.scroll_btn.setEnabled(os.path.isfile(
                 os.path.join(self.dest, ".pipeline.done")))
 

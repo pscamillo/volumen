@@ -164,6 +164,29 @@ def _lasagna_id(name: str) -> str | None:
     return sorted(ids)[-1] if ids else None
 
 
+_TRACKS_INDEX = "https://dl.ash2txt.org/datasets/spiral_datasets/"
+
+
+def _tracks_index() -> list[str]:
+    """Scrolls with a folder of published tracks (one page, 25/09: lasagna
+    alone is not enough — 1203, 1218, 1447 and 1545 have lasagna and no
+    tracks)."""
+    import re, urllib.request
+    with urllib.request.urlopen(urllib.request.Request(
+            _TRACKS_INDEX, headers={"User-Agent": "Volumen"}), timeout=20) as r:
+        html = r.read().decode()
+    return sorted(set(re.findall(r'href="PHerc([0-9A-Za-z]+)/"', html)))
+
+
+def _cached_tracks() -> list[str] | None:
+    import json
+    try:
+        with open(LASAGNA_CACHE, encoding="utf-8") as f:
+            return json.load(f).get("tracks")
+    except (OSError, ValueError):
+        return None
+
+
 def lasagna_published(network: bool = True,
                       max_age_h: float = 24.0) -> dict[str, str] | None:
     """{scroll: lasagna id} for the eligible scrolls that have tracks.
@@ -178,11 +201,13 @@ def lasagna_published(network: bool = True,
     fresh = cached and time.time() - cached.get("checked", 0) < max_age_h * 3600
     if fresh or not network:
         return cached["scrolls"] if cached else None
-    names = [s.name for s in ELIGIBLE if s.route in ("lasagna", "no lasagna")]
+    names = [s.name for s in ELIGIBLE
+             if s.route in ("lasagna", "no lasagna", "no tracks")]
     try:
         from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(8) as ex:
             got = dict(zip(names, ex.map(_lasagna_id, names)))
+        tracks = _tracks_index()
     except Exception:
         return cached["scrolls"] if cached else None
     scrolls = {k: v for k, v in got.items() if v}
@@ -190,7 +215,8 @@ def lasagna_published(network: bool = True,
         os.makedirs(os.path.dirname(LASAGNA_CACHE), exist_ok=True)
         tmp = LASAGNA_CACHE + ".part"
         with open(tmp, "w", encoding="utf-8") as f:
-            json.dump({"checked": time.time(), "scrolls": scrolls}, f, indent=1)
+            json.dump({"checked": time.time(), "scrolls": scrolls,
+                       "tracks": tracks}, f, indent=1)
         os.replace(tmp, LASAGNA_CACHE)
     except OSError:
         pass
@@ -205,10 +231,18 @@ def apply_lasagna(published: dict[str, str] | None) -> list[str]:
     if published is None:
         return []
     gained = []
+    tracks = _cached_tracks()
     for i, s in enumerate(ELIGIBLE):
-        if s.route not in ("lasagna", "no lasagna"):
+        if s.route not in ("lasagna", "no lasagna", "no tracks"):
             continue
-        r = "lasagna" if s.name in published else "no lasagna"
+        has_t = (s.name in tracks) if tracks is not None \
+            else s.route != "no tracks"
+        if not has_t:
+            r = "no tracks"
+        elif s.name in published:
+            r = "lasagna"
+        else:
+            r = "no lasagna"
         if r != s.route:
             if r == "lasagna":
                 gained.append(s.name)
