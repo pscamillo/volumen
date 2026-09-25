@@ -201,16 +201,10 @@ def unit_view(u) -> View:
     if u.area_cm2:
         note.append(f"{u.area_cm2:.2f} cm²; the prize asks for ten letters "
                     f"inside 4 cm².")
-    if getattr(u, "geometric", False):
-        note.append("EXPERIMENTAL — made without lasagna: sheet "
-                    "directions from the raw CT, validated on one scroll "
-                    "only.")
-    elif u.origin == "produced":
+    if u.origin == "produced":
         note.append("Made on this machine with lasagna, not from the "
                     "published package.")
     title = u.id.replace("/", " · ")
-    if getattr(u, "geometric", False):
-        title += " · experimental"
     return View(key=u.id, title=title,
                 layers=layers, note="  ".join(note), unit=u)
 
@@ -1129,8 +1123,7 @@ class ExplorePage(QWidget):
             "rotulo": code,
             "onde": f"corte {n}",
             "criterio": self.cut_note.text().strip(),
-            "via": ("geometrica" if getattr(v.unit, "geometric", False)
-                    else "lasagna"),
+            "via": "lasagna",
             "quando": time.strftime("%Y-%m-%d %H:%M:%S"),
             "por": "pscamillo",
             "origem": "volumen",

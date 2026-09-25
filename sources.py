@@ -85,7 +85,6 @@ class Unit:
     mesh_dir: str | None = None      # local path, if it is here
     mesh_rel: str | None = None      # path inside the public package
     mid: str | None = None           # flattened CT, if it was rendered
-    geometric: bool = False          # made without lasagna: experimental
     ink_forward: str | None = None   # local path or url
     ink_reverse: str | None = None
     area_cm2: float | None = None
@@ -311,8 +310,11 @@ def _scan_pipeline(root: str, out: dict) -> None:
                 u.ink_reverse = pr
             if not u.mesh_dir:
                 u.mesh_dir = _pipeline_mesh(root, rolo, z0, w)
-            # the geometric route fits into workT_*, the lasagna one into work_*
-            u.geometric = bool(u.mesh_dir and "/workT_" in u.mesh_dir)
+            # surfaces of the dropped geometric route (fitted into workT_*)
+            # are not listed since 25/09
+            if u.mesh_dir and "/workT_" in u.mesh_dir:
+                for k in [k for k, v in out.items() if v is u]:
+                    del out[k]
 
 
 RE_LEGACY = re.compile(r"^render_(?P<rolo>[0-9A-Za-z]+)$")

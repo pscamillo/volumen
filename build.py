@@ -2,39 +2,27 @@
 """
 build.py — running the pipeline from inside Volumen.
 
-Two routes, same controls:
-
-  with lasagna   esteira_via3.sh — the team's sheet-direction volumes feed the
-                 spiral fit. The scrolls it offers are read from the script's
-                 own case table.
-
-  geometric      esteira_geo.sh — EXPERIMENTAL. Sheet directions come from a
-                 structure tensor on the raw CT instead. It works — on
-                 PHercParis4 the surface landed 3.0 voxels from the official
-                 segment — but on 18/09 a cross-section through one window of
-                 0175B showed the surface crossing between sheets in part of
-                 it, while mask escape read 0.00%. Ink on these surfaces may
-                 belong to the neighbouring sheet. The scrolls it offers are
-                 the ones with tracks, an automatic umbilicus and a render
-                 template on disk; the rest are listed with what is missing.
-
-Both run the same post-fit (posfit.sh): flatten, render, mid, fibre panel,
-ink, vetoes. A unit comes out the same whichever route made it.
+One route: esteira_via3.sh, with the team's sheet-direction volumes
+(lasagna) feeding the spiral fit, then the post-fit (posfit.sh): flatten,
+render, mid, fibre panel, ink, vetoes. The scrolls it offers are the ones
+prepared in this pipeline folder. A geometric route (sheet directions from a
+structure tensor on the raw CT) was tried and dropped on 25/09: it crossed
+sheets on 0175B and put the axis on the edge of 0826.
 
 The pipeline is found through Folders: any folder holding esteira_via3.sh.
 
 STOPPING WITHOUT BREAKING THINGS. The lasagna route decides a window is done
 from the existence of its directories, so killing it mid-window would leave
 a half-made window that the next run skips as finished. Stop is in two
-steps: the first drops a signal file both scripts check between windows;
+steps: the first drops a signal file the script checks between windows;
 only a second click kills, and it moves the window in flight to
 _interrompidos/ instead of deleting it.
 
 No pause: freezing the process holds the GPU and leaves S3 connections idle,
 and S3 drops idle connections.
 
-ONE AT A TIME, across both routes and the desktop icon: two runs on one GPU
-fight for memory, and both routes rewrite UM_ALVO in painel_fibras.py.
+ONE AT A TIME, counting the pipeline's desktop icon: two runs on one GPU
+fight for memory, and each rewrites UM_ALVO in painel_fibras.py.
 """
 from __future__ import annotations
 
@@ -61,24 +49,16 @@ import config  # noqa: E402  pipeline discovery and umbilici folder
 
 MODES = {
     "lasagna": ("With lasagna", "esteira_via3.sh"),
-    "geometric": ("Geometric — experimental", "esteira_geo.sh"),
 }
 
-# Crossing between sheets is not a failure of one route: it was seen on
-# 18/09 in a geometric surface of 0175B and on 21/09 in a lasagna surface of
-# 0125. One case each — nothing measured says which route crosses more.
+# Crossing between sheets was seen on 21/09 in a lasagna surface of 0125.
 CROSSING = (
     "Any fitted surface can cross from one sheet to the next — seen here on "
-    "both routes, and mask escape catches neither. Ink on a crossing may "
+    "0125, and mask escape does not catch it. Ink on a crossing may "
     "belong to the neighbouring sheet: look at a cut before taking any "
     "candidate seriously."
 )
 WARNING_ALL = CROSSING
-WARNING_GEO = (
-    "EXPERIMENTAL — sheet directions come from the raw CT instead of the "
-    "team's lasagna, validated on one scroll only (PHercParis4, 3.0 voxels "
-    "from the official segment).  " + CROSSING
-)
 
 
 def pipeline_root() -> str:
@@ -111,28 +91,6 @@ def lasagna_scrolls(root: str) -> list[str]:
             return RE_CASE.findall(f.read())
     except OSError:
         return []
-
-
-def geometric_status(root: str) -> tuple[list[str], dict[str, str]]:
-    """Which no-lasagna scrolls can run, and what the others are missing."""
-    ready, missing = [], {}
-    names = [s.name for s in core.ELIGIBLE if s.route == "geometric"]
-    for r in names:
-        lack = []
-        if not glob.glob(os.path.join(
-                root, f"tracks_{r}", f"PHerc{r}_*_surface_m7_L0_th0.2.dbm")):
-            lack.append("tracks")
-        if not os.path.isfile(os.path.join(
-                config.umbilici_dir() or "/nonexistent",
-                f"PHerc{r}_umbilicus_auto.json")):
-            lack.append("umbilicus")
-        if not glob.glob(os.path.join(root, f"render_{r}_z*.sh")):
-            lack.append("render template")
-        if lack:
-            missing[r] = ", ".join(lack)
-        else:
-            ready.append(r)
-    return ready, missing
 
 
 def already_running() -> bool:
@@ -176,12 +134,10 @@ class BuildPage(QWidget):
 
         row = QHBoxLayout()
         row.setSpacing(10)
-        row.addWidget(QLabel("Route"))
         self.route = QComboBox()
         for key, (label, _) in MODES.items():
             self.route.addItem(label, key)
         self.route.currentIndexChanged.connect(self.mode_changed)
-        row.addWidget(self.route)
         row.addSpacing(18)
         row.addWidget(QLabel("Scroll"))
         self.pick = QComboBox()
@@ -227,7 +183,7 @@ class BuildPage(QWidget):
         srow.addStretch()
         outer.addLayout(srow)
 
-        self.warning = QLabel(WARNING_GEO)
+        self.warning = QLabel(WARNING_ALL)
         self.warning.setWordWrap(True)
         self.warning.setStyleSheet(
             "color: #e8a33d; border: 1px solid #e8a33d; border-radius: 8px;"
@@ -295,8 +251,7 @@ class BuildPage(QWidget):
     def mode_changed(self, *_):
         self.mode = self.route.currentData() or "lasagna"
         self.pick.clear()
-        geo = self.mode == "geometric"
-        self.warning.setText(WARNING_GEO if geo else WARNING_ALL)
+        self.warning.setText(WARNING_ALL)
         self.warning.setVisible(True)
         if not self.root:
             return
@@ -305,22 +260,12 @@ class BuildPage(QWidget):
             self.blurb.setText(f"{script} is not in {self.root} yet.")
             self.start_btn.setEnabled(False)
             return
-        if geo:
-            ready, missing = geometric_status(self.root)
-            self.pick.addItems(ready)
-            miss = "; ".join(f"{k} ({v})" for k, v in sorted(missing.items()))
-            self.blurb.setText(
-                "Scrolls with no published lasagna. Windows run in order of "
-                "umbilicus score, best first, and a window is only counted "
-                "done when its content says so."
-                + (f"  Not ready — missing: {miss}." if miss else ""))
-        else:
-            self.pick.addItems(lasagna_scrolls(self.root))
-            self.blurb.setText(
-                f"Runs the minimal route with lasagna from {self.root}. Each "
-                f"window is fitted, flattened, rendered and run through the "
-                f"ink model; its fibre panel lands in the gate queue. Windows "
-                f"are drawn from the grid without repetition.")
+        self.pick.addItems(lasagna_scrolls(self.root))
+        self.blurb.setText(
+            f"Runs the minimal route with lasagna from {self.root}. Each "
+            f"window is fitted, flattened, rendered and run through the "
+            f"ink model; its fibre panel lands in the gate queue. Windows "
+            f"are drawn from the grid without repetition.")
         self.start_btn.setEnabled(self.proc is None and self.pick.count() > 0)
 
     def toggle_log(self, on: bool) -> None:
@@ -369,8 +314,7 @@ class BuildPage(QWidget):
         self.route.setEnabled(False)
         self.stop_btn.setEnabled(True)
         self.stop_btn.setText("Stop")
-        tag = " · experimental" if self.mode == "geometric" else ""
-        self.status.setText(f"Running · PHerc{self.scroll}{tag}")
+        self.status.setText(f"Running · PHerc{self.scroll}")
         self.summary.setText("")
         self.log.appendPlainText(
             f"=== {time.strftime('%F %T')} · {script} · {self.scroll} · "
@@ -398,9 +342,8 @@ class BuildPage(QWidget):
         m, s = divmod(int(time.time() - self.started_at), 60)
         h, m = divmod(m, 60)
         where = f" · window z{self.current_z0}" if self.current_z0 else ""
-        tag = " · experimental" if self.mode == "geometric" else ""
         tail = " · stopping after this window" if self.stop_requested else ""
-        self.status.setText(f"Running · PHerc{self.scroll}{tag}{where} · "
+        self.status.setText(f"Running · PHerc{self.scroll}{where} · "
                             f"{h:d}:{m:02d}:{s:02d}{tail}")
 
     def stop(self) -> None:

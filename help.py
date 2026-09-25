@@ -62,9 +62,8 @@ GROUPS = [
          "One card per eligible scroll, plus PHerc Paris 4 for calibration. "
          "Bright cards have surfaces; the numbers say how many, how many were "
          "judged for ink and how many went through the gate. Dimmed cards "
-         "have nothing yet, in three shades: the lightest only needs the "
-         "pipeline run, the middle needs the geometric route's inputs "
-         "first, the darkest has no tracks published at all. Without the "
+         "have nothing yet, in two shades: the lighter has lasagna published and only needs the pipeline run; the darker has none, and its surfaces come from VC3D."
+         " Without the "
          "pipeline on this machine, dimmed cards all say the same thing — "
          "bring your own surface: grow a patch in VC3D and add its "
          "<code>.volpkg</code> in Folders. Click a bright card to open its "
@@ -107,7 +106,7 @@ GROUPS = [
          "URL."),
 
         ("Make surfaces",
-         "Pick a route, a scroll and how many windows, then <b>Start</b>. "
+         "Pick a scroll and how many windows, then <b>Start</b>. "
          "<b>Show log</b> follows it live. Only one run at a time: "
          "two on one GPU would fight for memory "
          "and could pick the same window. New surfaces join the catalogue "
@@ -165,16 +164,16 @@ GROUPS = [
          f"{a(LASAGNA, 'lasagna')}, published for some of the eligible "
          "scrolls, not all."),
 
-        ("Two routes",
-         "<b>With lasagna</b>, the team's sheet-direction volumes feed the fit "
-         "— the route behind the published package of 340 surfaces. "
-         "<b>Geometric</b> computes the sheet directions from the raw CT with a "
-         "structure tensor instead. It is experimental: validated on one "
-         "scroll, PHerc Paris 4, where the surface landed 3.0 voxels from the "
-         "official segment. A scroll can only run it once its tracks, an "
-         "automatic umbilicus and a render template are on disk. Both routes "
-         "share the same post-fit, so a surface comes out the same either "
-         "way."),
+        ("Scrolls without lasagna",
+         "Lasagna is published for some of the eligible scrolls, not all, and "
+         "new ones appear from time to time; <b>Make surfaces</b> checks once "
+         "a day and says when a scroll gains one. For a scroll without it, "
+         "grow a patch in VC3D, the team's own tool, and add its .volpkg in "
+         "<b>Folders</b>: the app reads it like any other surface — flattened "
+         "view, cuts, gate and verdicts. An earlier experiment here fitted "
+         "surfaces without lasagna, from the raw CT; it was left out after it "
+         "crossed sheets on one scroll and put the axis on the edge of "
+         "another."),
 
         ("Stopping without breaking anything",
          "The pipeline decides a window is finished from what is on disk, so "
@@ -227,9 +226,8 @@ GROUPS = [
          "crosses from one winding to the next, and ink showing there may "
          "belong to the neighbouring sheet. The usual checks miss it — a "
          "surface that jumps to its neighbour is still inside the scroll, so "
-         "mask escape reads 0.00%. It has been seen here on <b>both "
-         "routes</b>: in a geometric surface of 0175B on 18/09, and in a "
-         "lasagna surface of 0125 on 21/09."),
+         "mask escape reads 0.00%. It has been seen here, on a surface of 0125 on 21/09."
+         ""),
 
         ("Reading a cut",
          "A cut is one slice of the raw CT with the mesh drawn across it in "
@@ -239,6 +237,27 @@ GROUPS = [
          "— the surface is crossing. That test came from the 0125 case, and "
          "it is the most useful one so far. Marking a surface as having "
          "shapes of letters makes the app cut it on its own."),
+
+        ("Labelling a cut",
+         "Open the cut and zoom until the grey layers are separate lines. "
+         "Then follow the amber line from one end to the other, asking three "
+         "things. Does it sit on a layer — a bright band of papyrus — rather "
+         "than in the dark gap between two? Does it stay on the same layer "
+         "all the way? A quick test is to count the layers between the line "
+         "and a landmark — the edge of the scroll, a gap, a thick band — near "
+         "each end; if the count changes, the line has moved. And where it "
+         "bends, do the layers bend with it? A line that bends while the "
+         "stack runs straight has left its sheet. <b>Follows one sheet</b> "
+         "only if all three hold along the whole line. If the line leaves "
+         "its layer anywhere, even for a short stretch, the label is "
+         "<b>crosses sheets</b> — and say where in the note (right third, at "
+         "the fold), because ink away from that stretch may still be sound. "
+         "<b>Can't tell</b> is for layers that merge or vanish over much of "
+         "the line, so that none can be followed; a doubt about one short "
+         "stretch is not can't tell, it is a reason to look closer there. "
+         "Each label is about its own cut: the three cuts cross different "
+         "parts of the surface, and a surface can follow in one and cross in "
+         "another."),
 
         ("Why cut labels",
          "Each cut can be labelled: <i>follows one sheet</i>, <i>crosses "

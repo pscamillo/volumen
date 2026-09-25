@@ -61,7 +61,7 @@ class Scroll:
     volume: str               # zarr directory name in volumes/
     voxel_um: float           # native voxel size of that volume
     eligible: bool            # First Letters eligible
-    route: str                # "lasagna" | "geometric" | "no tracks" | "demo"
+    route: str                # "lasagna" | "no lasagna" | "no tracks" | "demo"
     note: str = ""
 
     @property
@@ -80,9 +80,9 @@ SCROLLS: dict[str, Scroll] = {
         Scroll("0125", "20250821151825-9.362um-1.2m-113keV-masked.zarr",
                9.362, True, "lasagna"),
         Scroll("0175A", "20250521115057-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "geometric"),
+               8.640, True, "no lasagna"),
         Scroll("0175B", "20250521125822-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "geometric"),
+               8.640, True, "no lasagna"),
         Scroll("0191", "20250821151635-9.362um-1.2m-113keV-masked.zarr",
                9.362, True, "lasagna"),
         Scroll("0211", "20250821151803-9.362um-1.2m-113keV-masked.zarr",
@@ -92,19 +92,19 @@ SCROLLS: dict[str, Scroll] = {
         Scroll("0268", "20251110183117-8.640um-1.2m-116keV-masked.zarr",
                8.640, True, "lasagna"),
         Scroll("0306B", "20250521133212-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "geometric"),
+               8.640, True, "no lasagna"),
         Scroll("0343", "20250521140437-8.640um-1.2m-116keV-masked.zarr",
                8.640, True, "lasagna"),
         Scroll("0358", "20250821151737-9.362um-1.2m-113keV-masked.zarr",
                9.362, True, "lasagna"),
         Scroll("0483A", "20250521140913-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "geometric"),
+               8.640, True, "no lasagna"),
         Scroll("0483B", "20251124083638-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "geometric"),
+               8.640, True, "no lasagna"),
         Scroll("0490A", "20250521151210-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "geometric"),
+               8.640, True, "no lasagna"),
         Scroll("0490B", "20250521151215-8.640um-1.2m-116keV-masked.zarr",
-               8.640, True, "geometric"),
+               8.640, True, "no lasagna"),
         Scroll("0800", "20250521135224-8.640um-1.2m-116keV-masked.zarr",
                8.640, True, "lasagna"),
         Scroll("0813", "20250821151723-9.362um-1.2m-113keV-masked.zarr",
@@ -112,7 +112,7 @@ SCROLLS: dict[str, Scroll] = {
         Scroll("0826", "20250821151701-9.362um-1.2m-113keV-masked.zarr",
                9.362, True, "lasagna"),
         Scroll("0846A", "20250728152254-9.362um-1.2m-113keV-masked.zarr",
-               9.362, True, "geometric",
+               9.362, True, "no lasagna",
                "also scanned at 2.403 um — prize rules forbid using data "
                "derived from a higher-resolution scan of the same scroll"),
         Scroll("0846B", "20250804142305-9.362um-1.2m-113keV-masked.zarr",

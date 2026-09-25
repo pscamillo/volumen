@@ -113,10 +113,15 @@ def ruim_windows() -> dict[str, set]:
     out: dict[str, set] = {}
     for root in sources.local_folders():
         for marker in glob.glob(os.path.join(root, "work*_*_z*", "RUIM")):
+            if os.sep + "workT_" in marker:
+                continue  # tried by the geometric route, dropped 25/09
             m = RE_WORK.match(os.path.basename(os.path.dirname(marker)))
             if m:
                 out.setdefault(m.group("rolo"), set()).add(int(m.group("z")))
-    return out
+    # only scrolls the app can run (lasagna) count: tries on the others
+    # came from the geometric route, dropped on 25/09
+    return {k: v for k, v in (out).items()
+            if getattr(core.SCROLLS.get(k), "route", "") == "lasagna"}
 
 
 # -------------------------------------------------------------- widgets ---
@@ -308,8 +313,7 @@ class Strip(QWidget):
 class ScrollCard(QFrame):
     picked = Signal(str)
 
-    def __init__(self, scroll: str, n: dict, windows: dict, ruins: set,
-                 geometric: bool):
+    def __init__(self, scroll: str, n: dict, windows: dict, ruins: set):
         super().__init__()
         self.scroll = scroll
         self.setObjectName("card")
@@ -326,7 +330,7 @@ class ScrollCard(QFrame):
         name.setObjectName("h2")
         left.addWidget(name)
         sub = QLabel((f"{s.voxel_um:g} µm" if s else "scale unknown")
-                     + ("  ·  geometric" if geometric else "  ·  lasagna"))
+                     + "  ·  lasagna")
         sub.setObjectName("muted")
         left.addWidget(sub)
         wins = QLabel(f"{len(windows)} window{'s' if len(windows) != 1 else ''}"
@@ -461,7 +465,6 @@ class ProgressPage(QWidget):
             windows: dict[int, dict] = {}
             n = {"units": 0, "gated": 0, "ink": 0, "cut": 0, "label": 0,
                  "hits": 0}
-            geometric = False
             for u in units:
                 s = st.get(u.id, {})
                 c = windows.setdefault(u.window, {
@@ -469,7 +472,6 @@ class ProgressPage(QWidget):
                     "hits": False, "hits_n": 0, "cut": 0})
                 c["units"] += 1
                 n["units"] += 1
-                geometric = geometric or getattr(u, "geometric", False)
                 if s.get("ink"):
                     c["ink"] += 1
                     n["ink"] += 1
@@ -490,7 +492,7 @@ class ProgressPage(QWidget):
                 tot[k] += n[k]
             # a RUIM window that also produced surfaces is not a failure
             r = {z for z in ruins.get(scroll, set()) if z not in windows}
-            card = ScrollCard(scroll, n, windows, r, geometric)
+            card = ScrollCard(scroll, n, windows, r)
             card.picked.connect(self.picked)
             lay.addWidget(card)
 

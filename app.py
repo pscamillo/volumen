@@ -342,16 +342,15 @@ class IntroPage(QWidget):
 # What a card says when a scroll has nothing prepared. The words avoid the
 # community's jargon: someone arriving here has never heard of lasagna.
 # What a card says when a scroll has nothing prepared. No jargon, and no
-# offer of a workaround: the geometric route has a known failure — it can
-# cross from one sheet to the next — and pointing a newcomer at it would
-# produce confident-looking surfaces that are wrong in places.
+# offer of a workaround: fitting without lasagna was tried and dropped on
+# 25/09 — it crossed sheets on 0175B and put the axis on the edge of 0826.
 ROUTE_TEXT = {
     # what the app can know is what is on THIS machine, not what anyone
     # else has run — so no "nobody has run it"
     "lasagna": "Everything the fitter needs is published — not run on "
                "this machine yet",
-    "geometric": "No lasagna published — the geometric route needs its "
-                 "inputs prepared here first",
+    "no lasagna": "No lasagna published yet — grow a patch in VC3D and "
+                  "add its .volpkg in Folders",
     "no tracks": "Scanned, but no tracks published — nothing to fit yet",
     "demo": "Already read — use it to calibrate your eye",
 }
@@ -402,17 +401,14 @@ class ScrollCard(QFrame):
                  n_gate: int = 0, n_ruim: int = 0):
         super().__init__()
         self.scroll_name = s.name
-        # tres niveis de apagado nos vazios: com lasanha e' so' rodar,
-        # sem lasanha depende do caminho experimental, e sem tracks nao ha
-        # caminho nenhum
+        # dois niveis de apagado nos vazios: com lasanha e' so' rodar; sem
+        # lasanha (ou sem tracks) a superficie vem de um patch do VC3D
         if s.route == "demo":
             name = "demo"
         elif n_units:
             name = "card"
         elif s.route == "lasagna":
             name = "empty"
-        elif s.route == "geometric":
-            name = "empty2"
         else:
             name = "empty3"
         self.setObjectName(name)
