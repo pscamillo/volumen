@@ -541,6 +541,8 @@ def step_ink(dest: str, villa: str) -> tuple[str, str]:
 
 
 def step_smoke(dest: str, spiral: str, vdir: str, ink: str) -> None:
+    if done(dest, "smoke"):
+        return
     log("== smoke: torch sees the GPU, vc_render_tifxyz answers, koine imports")
     py = spiral_python(spiral)
     run([py, "-c", "import torch, triton, sys; "

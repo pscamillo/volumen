@@ -283,6 +283,18 @@ def _scan_pipeline(root: str, out: dict) -> None:
             mid = f"{d}/mid/mid.tif"
             if os.path.isfile(mid):
                 u.mid = mid
+            # area from the flattened mesh (area_vx2, in volume voxels)
+            if u.area_cm2 is None:
+                fm = f"{d}/flat/tifxyz/flatten.tifxyz/meta.json"
+                sc = core.SCROLLS.get(rolo)
+                if sc is not None and os.path.isfile(fm):
+                    try:
+                        with open(fm, encoding="utf-8") as f:
+                            vx2 = json.load(f).get("area_vx2")
+                        if vx2:
+                            u.area_cm2 = float(vx2) * (sc.voxel_um / 10_000.0) ** 2
+                    except (OSError, ValueError):
+                        pass
             # no --flip-normals here, so "_reverse" is the team's forward
             fwd, rev = f"{d}/pred_ink9_reverse.tif", f"{d}/pred_ink9.tif"
             if os.path.isfile(fwd):

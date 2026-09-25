@@ -147,10 +147,10 @@ def main():
     d = ImageDraw.Draw(im)
     im.paste(Image.fromarray(ir), (gap, top))
     im.paste(Image.fromarray(ia), (2 * gap + win, top))
-    d.text((gap + 4, 12), f"REFERENCIA  PHerc1667 w013 (lido, {UM_REF} um "
-           f"-> {UM_ALVO})   cob={cr:.0%}  y={yr} x={xr}", fill=255)
-    d.text((2 * gap + win + 4, 12), f"ALVO  {args.alvo} ({UM_ALVO} um)"
-           f"   cob={ca:.0%}  y={ya} x={xa}", fill=255)
+    d.text((gap + 4, 12), f"REFERENCE  PHerc1667 w013 (read, {UM_REF} um "
+           f"-> {UM_ALVO})   coverage={cr:.0%}  y={yr} x={xr}", fill=255)
+    d.text((2 * gap + win + 4, 12), f"TARGET  {args.alvo} ({UM_ALVO} um)"
+           f"   coverage={ca:.0%}  y={ya} x={xa}", fill=255)
 
     out = args.out or str(base / f"painel_{args.alvo}_{win}.png")
     im.save(out)

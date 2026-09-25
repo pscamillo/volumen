@@ -114,12 +114,24 @@ It needs, on Linux or WSL2:
 | the `ink-detection` package and the `ink_9um` checkpoint | the ink model | a few GB |
 | per scroll: tracks (`.dbm`), an umbilicus, a render template | the fitter's inputs | 5–13 GB per scroll |
 
-Setting this up is a manual step today: the *Make surfaces* screen lists
-the four things it cannot find, and the pipeline is recognised as soon as
-its folder is added in *Folders*. A guided installer — checks first, and
-nothing downloaded until every check passes — is in progress. Windows
-(native) and macOS cannot run the fitter; they can still do everything in
-the reading tier.
+To set it up, open *Make surfaces* and click **Set up the pipeline…**.
+It checks the machine first (system, GPU and driver, VRAM, RAM, disk, git
+and uv, network), stops at the first check that fails, shows what it would
+download and where, and installs only after you say yes — about 20 GB,
+resumable if interrupted. Then **Prepare another scroll…** fetches each
+scroll's inputs (tracks, an umbilicus computed from the CT, a render
+template), and the scroll appears under *Make surfaces*. The same steps run
+from a terminal:
+
+```bash
+uv run setup_pipeline.py check
+uv run setup_pipeline.py install ~/volumen-pipeline
+uv run setup_pipeline.py scroll ~/volumen-pipeline 0125
+```
+
+The install folder must have no spaces in its path. Windows (native) and
+macOS cannot run the fitter; they can still do everything in the reading
+tier.
 </details>
 
 <details>
