@@ -255,6 +255,7 @@ class SetupDialog(QDialog):
     def prepare_scroll(self) -> None:
         rolo = self.scroll.currentData()
         self.pending = rolo
+        self.log.setVisible(True)
         self.umb_depth = 0
         self.axis_warn = []
         self.axis_box.setVisible(False)
@@ -274,6 +275,11 @@ class SetupDialog(QDialog):
                 self.sub.setVisible(True)
                 self.sub.setValue(int(float(m.group(1))))
                 self.step.setText(line.strip())
+                continue
+            # library noise (aiohttp closing its sessions late): kept in
+            # setup.log, left out of the dialog, where it read as an error
+            if "aiohttp" in line or line.strip().startswith(
+                    ("Unclosed client session", "Unclosed connector")):
                 continue
             # the plan the script prints before installing is already on
             # screen above; keep the log for what happens
@@ -371,12 +377,15 @@ class SetupDialog(QDialog):
             "of the rings on all three. On crushed scrolls the automatic one can "
             "land off centre, or outside the scroll, with a good score." + warn)
         self.axis_box.setVisible(True)
+        self.log.setVisible(False)      # the panel says what matters; keep
+                                        # the dialog within a laptop screen
         self.step.setText(f"PHerc{r}: tracks and umbilicus ready — check the "
                           "axis below.")
         self.adjustSize()
 
     def axis_accept(self) -> None:
         self.mode = "accept"
+        self.log.setVisible(True)
         self.step.setText(f"PHerc{self.pending}: writing the render template…")
         self._spawn(["accept", self.dest, self.pending])
 

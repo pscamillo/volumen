@@ -801,12 +801,17 @@ def umbilicus_check(dest: str, rolo: str) -> str:
         H, W = g.shape
         Y, X = np.ogrid[:H, :W]
         r = np.hypot(X - x, Y - y)
-        mark = ((r > 12) & (r < 16)) | ((abs(X - x) < 2) & (abs(Y - y) < 30)) \
-            | ((abs(Y - y) < 2) & (abs(X - x) < 30))
+        # a dark halo under the amber so the cross reads on any tissue
+        # thin: the centre of the rings under it must stay visible
+        halo = ((r > 16.5) & (r < 23.5)) | ((abs(X - x) < 3) & (abs(Y - y) < 38)) \
+            | ((abs(Y - y) < 3) & (abs(X - x) < 38))
+        mark = ((r > 18) & (r < 22)) | ((abs(X - x) < 1.5) & (abs(Y - y) < 36)) \
+            | ((abs(Y - y) < 1.5) & (abs(X - x) < 36))
         yi, xi = int(round(y)), int(round(x))
         if not (0 <= yi < H and 0 <= xi < W
                 and sl[max(0, yi - 3):yi + 4, max(0, xi - 3):xi + 4].max() > 0):
             log(f"!! axis outside the scroll at z {z}")
+        rgb[halo] = (0, 0, 0)
         rgb[mark] = (240, 170, 60)
         tiles.append(rgb)
     h = max(t.shape[0] for t in tiles)
