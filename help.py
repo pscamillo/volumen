@@ -20,6 +20,7 @@ VC3D = "https://github.com/ScrollPrize/villa/tree/main/volume-cartographer"
 LASAGNA = "https://github.com/ScrollPrize/villa/tree/main/lasagna"
 VILLA = "https://github.com/ScrollPrize/villa"
 PRIZES = "https://scrollprize.org/prizes"
+MESHES = "https://github.com/pscamillo/vesuvius-eligible-meshes"
 
 
 def a(url: str, text: str) -> str:
@@ -29,7 +30,7 @@ def a(url: str, text: str) -> str:
 GROUPS = [
     ('The loop', [
         ('What this is for',
-         'Volumen runs one loop: make surfaces from a scroll, check that each sits on a single sheet, look for writing on those that do, and keep a record of every judgement. Everything but making surfaces runs on any computer — uv brings its own Python. The surfaces here from the start are the 340 of ' + 'vesuvius-eligible-meshes' + ', published by the author for eight eligible scrolls with the same minimal route this app runs; they are fitted, not verified, and the checks below apply to them as to any other. Volumen fits surfaces but never traces or edits them — that is ' + a(VC3D, 'VC3D') + ', and any surface here exports to it as a ready-made project.'),
+         'Volumen runs one loop: make surfaces from a scroll, check that each sits on a single sheet, look for writing on those that do, and keep a record of every judgement. Everything but making surfaces runs on any computer — uv brings its own Python. The surfaces here from the start are the 340 of ' + a(MESHES, 'vesuvius-eligible-meshes') + ', published by the author for eight eligible scrolls with the same minimal route this app runs; they are fitted, not verified, and the checks below apply to them as to any other. Volumen fits surfaces but never traces or edits them — that is ' + a(VC3D, 'VC3D') + ', and any surface here exports to it as a ready-made project.'),
         ('Why judge',
          'A scroll has hundreds of surfaces. The ones you mark as sound are the short list you come back to; one judged sound with nothing on it you will not open again. Verdicts stay on this machine.'),
     ]),
