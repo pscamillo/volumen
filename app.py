@@ -809,7 +809,7 @@ class Main(QWidget):
                 except json.JSONDecodeError:
                     continue
                 if r.get("unit") and r.get("origin") == "gate.py":
-                    out[r["unit"]] = r.get("surface")
+                    out[r["unit"]] = config.surface_en(r.get("surface"))
         return out
 
     def to_scrolls(self):

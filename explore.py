@@ -833,7 +833,7 @@ class ExplorePage(QWidget):
         self.warn.setText("")
         prev = self.previous_verdict(v.key)
         self.sel = config.verdict_en(prev.get("verdict"))
-        self.sel_surface = prev.get("surface")
+        self.sel_surface = config.surface_en(prev.get("surface"))
         # the same surface shown again (its cuts just made) keeps what was
         # opened; only a new surface starts from nothing (25/09: the ink
         # warning fired on a verdict made with the ink map open)

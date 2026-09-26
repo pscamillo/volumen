@@ -88,7 +88,7 @@ def unit_state(cache: core.Cache) -> dict:
         if r.get("verdict"):
             s["ink"] = config.verdict_en(r["verdict"])
         if r.get("surface"):
-            s["surface"] = r["surface"]
+            s["surface"] = config.surface_en(r["surface"])
         if r.get("origin") == "gate.py":
             s["gated"] = True
     return st

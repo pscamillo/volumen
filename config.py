@@ -154,3 +154,16 @@ LEGACY_VERDICT = {
 def verdict_en(v):
     """Every reader of FINDINGS goes through here."""
     return LEGACY_VERDICT.get(v, v)
+
+
+LEGACY_SURFACE = {
+    "boa": "good",
+    "parcial": "partial",
+    "ruim": "poor",
+    "ilegivel": "unreadable",
+}
+
+
+def surface_en(v):
+    """Surface verdicts from the earlier triage, read as the app's words."""
+    return LEGACY_SURFACE.get(v, v)

@@ -277,7 +277,7 @@ class GatePage(QWidget):
                     continue
                 if (r.get("unit") and r.get("surface")
                         and r.get("origin") == "gate.py"):
-                    out[r["unit"]] = r["surface"]
+                    out[r["unit"]] = config.surface_en(r["surface"])
         return out
 
     @property
