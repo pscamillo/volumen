@@ -283,7 +283,7 @@ class Splash(QWidget):
 
 # ----------------------------------------------------------------- intro --
 INTRO = [
-    "A reader for the scrolls eligible for the Vesuvius Challenge's "
+    "The whole loop, in one window, for the scrolls eligible for the Vesuvius Challenge's "
     "<a href='https://scrollprize.org/prizes' style='color:#e8a33d; text-decoration:none'>First Letters prize</a>: "
     "make surfaces with the minimal route, gate them, check the cuts, and "
     "look for writing.",

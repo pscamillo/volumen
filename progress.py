@@ -334,14 +334,14 @@ class ScrollCard(QFrame):
         sub.setObjectName("muted")
         left.addWidget(sub)
         wins = QLabel(f"{len(windows)} window{'s' if len(windows) != 1 else ''}"
-                      + (f"  ·  {len(ruins)} with no winding" if ruins else ""))
+                      + (f"  ·  {len(ruins)} no winding" if ruins else ""))
         wins.setObjectName("muted")
         wins.setStyleSheet("font-size: 12px;")
         left.addWidget(wins)
         left.addStretch()
         box = QWidget()
         box.setLayout(left)
-        box.setFixedWidth(170)
+        box.setFixedWidth(190)
         box.setStyleSheet("background: transparent;")
         lay.addWidget(box)
 
