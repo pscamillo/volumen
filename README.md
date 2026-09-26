@@ -33,7 +33,7 @@ On a minimal Linux system, add `libxcb-cursor0 libxkbcommon-x11-0 libgl1`
 
 ## What it does
 
-- **Scrolls**: one card per eligible scroll, saying what exists for it, plus
+- **Scrolls**: one card per scroll eligible on 26 Sep 2026, saying what exists for it, plus
   PHerc Paris 4, already read, to calibrate the eye.
 - **Surface view**: the flattened CT, made here from the scan without VC3D; the
   ink maps in both directions; three cuts through the raw CT with the surface
