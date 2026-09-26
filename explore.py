@@ -1079,8 +1079,10 @@ class ExplorePage(QWidget):
         # 1-3") rather than for this cut — show it, but as the unit's
         mine = labels.get((v.unit.id, f"corte {n}"))
         if mine is None:
-            mine = next((r for (u, _), r in labels.items()
-                         if u == v.unit.id), None)
+            mine = next((r for (u, onde), r in labels.items()
+                         if u == v.unit.id
+                         and not (onde.startswith("corte ")
+                                  and onde[6:].strip().isdigit())), None)
         chosen = mine.get("rotulo") if mine else None
         self.cut_group.setExclusive(False)
         for code, b in self.cut_buttons.items():
@@ -1174,7 +1176,7 @@ class ExplorePage(QWidget):
         self.update_sheet_row()
         # the "no cut is labelled" warning was written when the verdict was
         # recorded; labelling a cut answers it, so it has to be redone
-        self.warn.setText(self.judgement_warnings(self.sel))
+        self.warn.setText(self.judgement_warnings(None))   # a cut, not ink
         nome = next((lbl for lbl, c, _ in CUT_LABELS if c == code), code)
         self.status.setText(f"Cut {n} labelled: {nome}.")
 
