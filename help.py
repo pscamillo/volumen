@@ -36,8 +36,8 @@ GROUPS = [
          "<b>Progress</b> are its steps. It fits surfaces but never traces or "
          f"edits them by hand — that, and much more, is {a(VC3D, 'VC3D')}, "
          "and any surface here can be exported to it as a ready-made project. "
-         "Everything but <i>making</i> surfaces runs on any computer with "
-         "Python: the flattened view is made here, from the CT, without "
+         "Everything but <i>making</i> surfaces runs on any computer — uv "
+         "brings its own Python: the flattened view is made here, from the CT, without "
          "VC3D. Making surfaces is the optional step, and needs the pipeline "
          "described under <i>Make surfaces</i>. "
          "The surfaces already here when the app first opens are the 340 of "
@@ -122,7 +122,12 @@ GROUPS = [
          "you say yes; <b>Prepare another scroll…</b> then fetches each "
          "scroll's inputs, and ends by showing the scroll's axis on three "
          "slices: accept it only if it sits in the middle of the rings on all "
-         "three, or give your own umbilicus file."),
+         "three, or give your own umbilicus file. "
+         "What it takes: Linux, or WSL2 on Windows (expected to work, "
+         "not yet tested); an NVIDIA GPU with a driver for CUDA 12.8 or "
+         "later — 12 GB of VRAM tested, 6 GB reported as very tight; 32 GB "
+         "of RAM comfortable, 16 GB tight; about 20 GB for the install "
+         "and 5–13 GB per scroll. The setup checks all of this first."),
 
         ("The fibre gate",
          "The queue of panels the pipeline made, one at a time. Judge with "
