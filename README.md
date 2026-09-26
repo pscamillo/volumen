@@ -1,6 +1,6 @@
 # Volumen
 
-The whole loop, in one desktop window, for the Herculaneum scrolls eligible for the First
+The whole loop, in one place, for the Herculaneum scrolls eligible for the First
 Letters prize. It opens a surface, shows the CT along it, cuts the raw CT
 through it to check that it sits on one sheet, shows the ink map where one
 exists, and keeps a record of every judgement — and, on a machine with an
