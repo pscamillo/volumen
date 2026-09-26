@@ -181,11 +181,13 @@ Changes take effect on the next start.
 
 ## Data and credits
 
-Scroll data: Vesuvius Challenge open data, CC BY-NC 4.0. Surfaces: the
-[vesuvius-eligible-meshes][meshes] package. The minimal route, lasagna, tracks
-and ink model: the Vesuvius Challenge's [villa][villa]. An independent project by
-Paulo Sergio Camillo (pscamillo), implemented with Claude; not affiliated with
-the Scroll Prize. Code: MIT.
+Designed and directed by Paulo Sergio Camillo (pscamillo); implemented with
+Claude. The surfaces come from the [vesuvius-eligible-meshes][meshes] package.
+The scans, lasagna, tracks, ink model, VC3D and the minimal route with its
+spiral fitter are the Vesuvius Challenge team's open data and code (CC BY-NC
+4.0), in [villa][villa]; the fitter runs here from the fork of Iyán Dopico
+(IyanDopico), which carries his fix. Built on PySide6 (Qt), zarr and numpy. An independent project, not
+affiliated with the Scroll Prize. Code: MIT.
 
 [prize]: https://scrollprize.org/prizes
 [meshes]: https://github.com/pscamillo/vesuvius-eligible-meshes

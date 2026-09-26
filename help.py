@@ -96,9 +96,12 @@ GROUPS = [
          f"{a('https://github.com/pscamillo/volumen', 'github.com/pscamillo/volumen')}. "
          "The surfaces come from "
          f"{a('https://github.com/pscamillo/vesuvius-eligible-meshes', 'vesuvius-eligible-meshes')}; "
-         "the scans, lasagna, tracks and ink model from the Vesuvius "
-         "Challenge's open data and code (CC BY-NC 4.0), and the minimal "
-         f"route from the team's {a(VILLA, 'villa')}."),
+         "the scans, lasagna, tracks, ink model, VC3D and the minimal route "
+         "with its spiral fitter are the Vesuvius Challenge team's open data "
+         f"and code (CC BY-NC 4.0), in {a(VILLA, 'villa')}; the fitter runs "
+         "here from the fork of Iyán Dopico (IyanDopico), which carries his "
+         "fix. Built on PySide6 (Qt), zarr and numpy. An independent project, "
+         "not affiliated with the Scroll Prize."),
     ]),
 ]
 
