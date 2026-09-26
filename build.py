@@ -169,6 +169,7 @@ class BuildPage(QWidget):
         self.log_btn.toggled.connect(self.toggle_log)
         row.addWidget(self.log_btn)
         outer.addLayout(row)
+        self.ctl_row = row
 
         self.blurb = QLabel()
         self.blurb.setObjectName("muted")
@@ -314,6 +315,11 @@ class BuildPage(QWidget):
                     "Folders), the cuts, the fibre gate and your "
                     "verdicts.</p>")
                 self.setup_btn.setVisible(False)
+                # scroll, windows, Start, Stop, Show log: nothing to run here
+                for i in range(self.ctl_row.count()):
+                    w = self.ctl_row.itemAt(i).widget()
+                    if w is not None:
+                        w.setVisible(False)
             else:
                 self.setup_btn.setVisible(True)
             return
