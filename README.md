@@ -51,8 +51,8 @@ install already has what PySide6 needs; on a minimal system add
 - **Bring your own surfaces**: point *Folders* at any tifxyz folder, or at
   a VC3D `.volpkg` — patches grown in GrowPatch show up alongside.
 - **Make surfaces** (with the pipeline installed): pick a scroll
-  and how many windows; new surfaces join the catalogue as each window
-  finishes, and the fibre gate queues their panels for judgement.
+  and how many windows; new surfaces join the catalogue when the run
+  ends, and the fibre gate queues their panels for judgement.
 
 ## How to judge
 
