@@ -23,7 +23,7 @@ touches — about 4 s per window against 72 s for a whole slice. This module
 imports those and only redoes the per-unit loop.
 
 Output lands where the Explore already looks:
-    ~/.cache/volumen/cortes/<scroll>_z<window>_<wrap>_<n>.png
+    ~/.cache/volumen/cuts/<scroll>_z<window>_<wrap>_<n>.png
 """
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ from PySide6.QtCore import QObject, QThread, Signal
 import core
 import sources
 
-DEST = os.path.expanduser("~/.cache/volumen/cortes")
+DEST = os.path.expanduser("~/.cache/volumen/cuts")
 
 
 def existing(u) -> list[str]:

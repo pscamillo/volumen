@@ -16,7 +16,7 @@ from the existence of its directories, so killing it mid-window would leave
 a half-made window that the next run skips as finished. Stop is in two
 steps: the first drops a signal file the script checks between windows;
 only a second click kills, and it moves the window in flight to
-_interrompidos/ instead of deleting it.
+_interrupted/ instead of deleting it.
 
 No pause: freezing the process holds the GPU and leaves S3 connections idle,
 and S3 drops idle connections.
@@ -54,7 +54,7 @@ MODES = {
 # Crossing between sheets was seen on 21/09 in a lasagna surface of 0125.
 CROSSING = (
     "Any fitted surface can cross from one sheet to the next — seen here on "
-    "0125, and mask escape does not catch it. Ink on a crossing may "
+    "0125, and the check for leaving the scroll does not catch it. Ink on a crossing may "
     "belong to the neighbouring sheet: look at a cut before taking any "
     "candidate seriously."
 )
@@ -458,7 +458,7 @@ class BuildPage(QWidget):
             return ("Stopped, but the window in flight could not be "
                     "identified from the log. Check the newest work* and "
                     "render_* folders by hand before the next run.")
-        dest = os.path.join(self.root, "_interrompidos",
+        dest = os.path.join(self.root, "_interrupted",
                             time.strftime("%Y%m%d-%H%M%S"))
         moved = []
         for name in os.listdir(self.root):

@@ -182,7 +182,7 @@ def unit_view(u) -> View:
     # cross-sections, when they have been generated for this unit
     import glob as _g
     for i, c in enumerate(sorted(_g.glob(os.path.expanduser(
-            f"~/.cache/volumen/cortes/"
+            f"~/.cache/volumen/cuts/"
             f"{u.scroll}_z{u.window}_{u.wrap}_*.png"))), 1):
         layers.append(Layer(f"cut{i}", f"Cut {i}",
                             "A slice of the raw CT with the mesh drawn on "

@@ -62,7 +62,7 @@ GROUPS = [
          "One card per eligible scroll, plus PHerc Paris 4 for calibration and, at the end, any scroll withdrawn from the prize, with the reason. "
          "Bright cards have surfaces; the numbers say how many, how many were "
          "judged for ink and how many went through the gate. Dimmed cards "
-         "have nothing yet, in two shades: the lighter has lasagna published and only needs the pipeline run; the darker has none, and its surfaces come from VC3D."
+         "have nothing yet, in two shades: the lighter has lasagna published and only needs the pipeline run; the darker has no lasagna or no tracks yet, and its surfaces come from VC3D."
          " Without the "
          "pipeline on this machine, dimmed cards all say the same thing — "
          "bring your own surface: grow a patch in VC3D and add its "
@@ -80,9 +80,12 @@ GROUPS = [
          "the flattened sheet; <b>Ink · forward</b> and <b>Ink · reverse</b>; "
          "and <b>Cut 1–3</b> once cuts exist. Scroll to zoom, drag to move. "
          "The bar at the bottom left is 1 mm and the dashed square is the "
-         "size of a letter, both at the current zoom. Two rows record what "
-         "you see: <i>What do you see?</i> for ink, <i>Surface</i> for the "
-         "sheet. Amber lines below the picture warn when a verdict does not "
+         "size of a letter, both at the current zoom. Three rows record what "
+         "you see, in the order to judge them: <i>Surface · CT</i> for the "
+         "weave, <i>Sheet · cuts</i> for the cuts, <i>Ink — what do you "
+         "see?</i> for the ink. Only the row for the open layer can be "
+         "judged, and the keys follow the same rule; <i>i</i> over the CT "
+         "opens both surface and ink. Amber lines below the picture warn when a verdict does not "
          "rest on what was opened — ink judged without an ink map, say, or "
          "nothing judged at a zoom too low to see a letter. A surface that "
          "came without a flattened view — the published package is meshes "
@@ -138,7 +141,7 @@ GROUPS = [
          "cuts like any other surface."),
 
         ("Keys",
-         "The old triage tool's keys still work. In the surface view: "
+         "In the surface view: "
          "<b>1 2 3 4</b> ink verdict, <b>z x c v</b> surface verdict "
          "(good, partial, poor, unreadable), <b>Tab</b> next layer and "
          "<b>Shift+Tab</b> the previous one, <b>i</b> ink over the CT in "
@@ -182,7 +185,7 @@ GROUPS = [
          "cutting it off mid-window would leave a half-made one that looks "
          "done. <b>Stop</b> lets the current window finish and starts no "
          "other. Only a second click, <b>Stop now</b>, kills it — and the "
-         "half-made window is moved aside to <code>_interrompidos/</code>, "
+         "half-made window is moved aside to <code>_interrupted/</code>, "
          "not deleted, and redone next time."),
 
         ("Windows with no winding",
@@ -228,7 +231,7 @@ GROUPS = [
          "crosses from one winding to the next, and ink showing there may "
          "belong to the neighbouring sheet. The usual checks miss it — a "
          "surface that jumps to its neighbour is still inside the scroll, so "
-         "mask escape reads 0.00%. It has been seen here, on a surface of 0125 on 21/09."
+         "the check for leaving the scroll reads clean. It has been seen here, on a surface of 0125 on 21/09."
          ""),
 
         ("Reading a cut",
@@ -298,14 +301,6 @@ GROUPS = [
          "<i>Forward</i> and <i>reverse</i> are the team's directions, and "
          "mean the same thing everywhere in the app."),
 
-        ("Flags from the pipeline",
-         "The pipeline tests every map for rows at a regular pitch and flags "
-         "those that pass. Each window is twelve tests — three wraps, two "
-         "directions, two polarities — so at p &lt; 0.05 roughly one flag in "
-         "every two windows is expected by chance. A flag says where to look "
-         "first, never that something is there. The first one checked here, "
-         "0175A z4608 w060, did not hold up."),
-
         ("The model's resolution",
          "The ink model was trained at 9.362 µm. On scrolls scanned at 8.64 "
          "µm it is 8% off, so its answer there is approximate — good for "
@@ -315,7 +310,7 @@ GROUPS = [
          "Each surface is one winding, counted outward from the middle: w020 "
          "is close to the axis, w100 far out. Inner windings hold up better "
          "— across eight scrolls, 83% of w020 surfaces looked clean against "
-         "33% at w100 — but are smaller, from about 2.2 cm² at w020 to 10 cm² "
+         "33% at w100 — but are smaller, from about 2 cm² at w020 to 8–10 cm² "
          "at w100. The prize asks for ten letters inside a single 4 cm² area, "
          "so the middle wraps are the compromise."),
     ]),
@@ -336,7 +331,7 @@ GROUPS = [
          "Verdicts, surface and gate judgements: "
          "<code>~/.local/share/volumen/my-findings.jsonl</code>, one line each, "
          "the last one for a surface wins. Cuts: "
-         "<code>~/.cache/volumen/cortes/</code>. Cut labels: "
+         "<code>~/.cache/volumen/cuts/</code>. Cut labels: "
          "<code>~/.local/share/volumen/cut_labels.jsonl</code>. "
          "Folder settings: <code>~/.config/volumen/folders.json</code>. "
          "Exports for VC3D: <code>~/Volumen exports/</code>. Flattened views "
@@ -348,7 +343,7 @@ GROUPS = [
     ("If you do find letters", [
         ("Before anything else",
          "Ten letters inside a single 4 cm² area of a scroll nobody has read "
-         "is the First Letters prize, and none has been claimed. The rules "
+         "is the First Letters prize. The rules "
          "matter — among other things, candidates go to the Scroll Prize "
          "team privately before any public post — and they change, so read "
          f"them at the source: {a(PRIZES, 'scrollprize.org/prizes')}. Check "

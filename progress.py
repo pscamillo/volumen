@@ -52,7 +52,7 @@ CUT = QColor("#8e8a9e")
 RUIM = QColor("#a0523d")
 
 HITS = ("shapes that could be letters", "clear letters")
-CUTS_DIR = os.path.expanduser("~/.cache/volumen/cortes")
+CUTS_DIR = os.path.expanduser("~/.cache/volumen/cuts")
 import config  # noqa: E402
 CUT_LABELS = config.CUT_LABELS
 WINDOW = 800
