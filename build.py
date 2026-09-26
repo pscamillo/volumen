@@ -297,7 +297,25 @@ class BuildPage(QWidget):
                 "in VC3D (add its .volpkg in Folders), or from any tifxyz "
                 "folder.</p>")
             self.start_btn.setEnabled(False)
-            self.setup_btn.setVisible(True)
+            self.status.setText("")          # nothing here to be idle
+            if os.name == "nt":
+                # the pipeline is bash, Triton and a Linux VC3D build: on
+                # Windows it runs only inside WSL2, from a copy there
+                self.blurb.setText(
+                    "<p>Making surfaces runs Linux tools — the spiral fitter "
+                    "on Triton and CUDA, the VC3D renderer, shell scripts — "
+                    "so it does not run on Windows itself. On Windows 10 or "
+                    "11 it should run inside <b>WSL2</b> (not yet tested): install Ubuntu there, "
+                    "clone Volumen inside it and start it from there. The "
+                    "NVIDIA driver on Windows gives it the GPU, and "
+                    "<b>Set up the pipeline</b> appears in that copy.</p>"
+                    "<p>This copy does everything else: the published "
+                    "surfaces, patches grown in VC3D (add the .volpkg in "
+                    "Folders), the cuts, the fibre gate and your "
+                    "verdicts.</p>")
+                self.setup_btn.setVisible(False)
+            else:
+                self.setup_btn.setVisible(True)
             return
         self.setup_btn.setVisible(False)
         # an installed pipeline (rolos.sh) can prepare more scrolls here
