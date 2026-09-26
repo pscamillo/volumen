@@ -1,7 +1,7 @@
 [project]
 name = "volumen"
 version = "0.1.0"
-description = "A workbench for the Herculaneum scroll surfaces: open, flatten, cut, judge."
+description = "A reader for the Herculaneum scroll surfaces: open, flatten, cut, judge."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Paulo Sergio Camillo" }]

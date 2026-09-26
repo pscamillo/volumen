@@ -201,7 +201,7 @@ class Splash(QWidget):
 
         lay.addWidget(self.name)
 
-        self.tag = QLabel("scroll workbench")
+        self.tag = QLabel("")
         self.tag.setObjectName("muted")
         self.tag.setAlignment(Qt.AlignCenter)
         # not shown since 24/09: the first paragraph already says it
@@ -283,7 +283,7 @@ class Splash(QWidget):
 
 # ----------------------------------------------------------------- intro --
 INTRO = [
-    "A workbench for the scrolls eligible for the Vesuvius Challenge's "
+    "A reader for the scrolls eligible for the Vesuvius Challenge's "
     "<a href='https://scrollprize.org/prizes' style='color:#e8a33d; text-decoration:none'>First Letters prize</a>: "
     "make surfaces with the minimal route, gate them, check the cuts, and "
     "look for writing.",
@@ -606,11 +606,12 @@ class ScrollsPage(QWidget):
              gated: dict | None = None) -> None:
         by = catalog.by_scroll()
         ready = sum(len(v) for v in by.values())
+        judged = sum(1 for v in by.values() for u in v if u.id in seen)
         n_gate = len(gated or {})
         ruins = progress_page.ruim_windows()
         self.sub.setText(
             f"{ready} surfaces across {len(by)} of the {len(core.ELIGIBLE)} eligible volumes. "
-            f"{len(seen)} judged for ink, {n_gate} through the fibre gate. "
+            f"{judged} judged for ink, {n_gate} through the fibre gate. "
             f"The remaining scrolls have nothing prepared yet.")
 
         holder = QWidget()
@@ -852,6 +853,9 @@ class Main(QWidget):
 
     def open_unit(self, unit):
         self.came_from = self.surfaces
+        # the view counts within the scroll the person is working through
+        self.explore.scope = (self.surfaces.scroll_name,
+                              [u.id for u in self.surfaces.units])
         self.explore.show_view(explore.unit_view(unit))
         self.stack.setCurrentWidget(self.explore)
 

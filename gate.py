@@ -310,14 +310,14 @@ class GatePage(QWidget):
             html = ["<table cellpadding='3'>"
                     "<tr><td><b>direction</b></td><td><b>pol</b></td>"
                     "<td><b>comp</b></td><td><b>void</b></td>"
-                    "<td><b>signal</b></td><td><b>pitch</b></td>"
+                    "<td><b>signal</b></td>"
                     "<td><b>px</b></td></tr>"]
             for r in rows:
                 html.append(
                     f"<tr><td>{ {'fwd': 'forward', 'rev': 'reverse'}.get(r['dir_equipe'], r['dir_equipe'])}</td>"
                     f"<td>{ {'escura': 'dark', 'clara': 'light'}.get(r.get('pol'), r.get('pol') or '—') }</td>"
                     f"<td>{r['n_comp']}</td><td>{r['n_void']}</td>"
-                    f"<td>{r['n_sinal']}</td><td>{r['pitch_p'] or '—'}</td>"
+                    f"<td>{r['n_sinal']}</td>"
                     f"<td>{r['px_surv']}</td></tr>")
             html.append("</table>")
             if any(str(r.get("row_org")).lower() == "true" for r in rows):

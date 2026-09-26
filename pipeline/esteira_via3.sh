@@ -64,4 +64,4 @@ PY
   FEITAS=$((FEITAS+1))
 done
 echo "================ PIPELINE $ROLO: $FEITAS window(s) | $(date +%H:%M) ================"
-echo "Gate queue: $R/fila_gate/ | flags: grep FLAG in the log | CSV: $CSV"
+echo "Gate queue: $R/fila_gate/ | CSV: $CSV"

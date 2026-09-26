@@ -17,7 +17,7 @@ named "_reverse" is the team's forward direction. The layer titles say the
 real direction, not the file name.
 
 RESOLUTION IS THE STORY. The demo carries an ink map from a 2.4 um scan. The
-23 eligible volumes are all 8.6 or 9.4 um, and prize rules forbid using a
+eligible volumes are all 8.6 or 9.4 um, and prize rules forbid using a
 finer scan of the scroll you submit. The lesson view exists to make that
 visible rather than argued.
 """
@@ -123,7 +123,7 @@ def demo_view() -> View:
         layers=[Layer(
             "ink", "Ink · 2.4 µm",
             "This is Greek, and people have read it. The scan behind it is "
-            "2.4 µm — finer than anything the 23 eligible scrolls have.",
+            "2.4 µm — finer than anything the eligible scrolls have.",
             2.4, "jpeg", stretch="raw",
             url=f"{S3}/PHercParis4/segments/{SEG_PARIS4}/ink-detection/"
                 "downsampled/PHercParis4-20231005123336-2.4um-0.22m-78keV-"
@@ -442,7 +442,7 @@ class SheetView(QGraphicsView):
             p.drawLine(int(x0), int(y0), int(x0 + px_mm), int(y0))
             for x in (x0, x0 + px_mm):
                 p.drawLine(int(x), int(y0 - 6), int(x), int(y0 + 6))
-            p.setFont(QFont("", 10))
+            p.setFont(QFont(self.font().family(), 10))
             p.drawText(int(x0 + px_mm + 10), int(y0 + 4), "1 mm")
 
         box = core.letter_box_pixels(self.voxel_um, self.zoom)
@@ -450,7 +450,7 @@ class SheetView(QGraphicsView):
             p.setPen(QPen(QColor("#e8a33d"), 2, Qt.DashLine))
             p.setBrush(Qt.NoBrush)
             texto = "a typical letter"
-            p.setFont(QFont("", 10))
+            p.setFont(QFont(self.font().family(), 10))
             larg = p.fontMetrics().horizontalAdvance(texto)
             # a legenda comeca na esquerda da caixa e e mais larga que ela
             # quando a letra e pequena: a margem tem de caber as duas
@@ -1348,7 +1348,8 @@ class ExplorePage(QWidget):
         self.record(None)
 
     def record(self, name) -> None:
-        if not next(iter(self.verdict_buttons.values())).isEnabled():
+        if (name is not None
+                and not next(iter(self.verdict_buttons.values())).isEnabled()):
             self.status.setText("Open Ink · forward or reverse (or i over the "
                                 "CT) to judge the ink.")
             return
@@ -1393,8 +1394,13 @@ class ExplorePage(QWidget):
                         continue
                     if r.get("unit"):
                         seen[r["unit"]] = config.verdict_en(r.get("verdict"))
-        n = len(seen)
-        hits = sum(1 for v in seen.values() if v in HITS)
-        self.counter.setText(
-            f"{n} surface{'s' if n != 1 else ''} looked at · {hits} with "
-            f"shapes" if n else "")
+        scope = getattr(self, "scope", None)
+        cur = self.view_data
+        if scope and cur is not None and cur.key in scope[1]:
+            name, ids = scope
+            n = sum(1 for k in ids if k in seen)
+            hits = sum(1 for k in ids if seen.get(k) in HITS)
+            self.counter.setText(
+                f"{n} of {len(ids)} in {'PHerc' + name if name[:1].isdigit() else name} looked at · {hits} with shapes")
+        else:
+            self.counter.setText("")

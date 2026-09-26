@@ -92,8 +92,7 @@ for WR in ['020','040','060','080','100']:
                    rep.get('n_after_darkness_veto'), rep.get('line_pitch_p'),
                    rep.get('row_organized'), int(np.count_nonzero(mask))]
             linhas.append(row)
-            flag = ' <== FLAG' if rep.get('row_organized') else ''
-            print(f'{ROLO} z{Z0} w{WR} {dn} {pol}: comps {row[5]}->{row[6]}->{row[7]} pitch {row[8]}{flag}', flush=True)
+            print(f'{ROLO} z{Z0} w{WR} {dn} {pol}: comps {row[5]}->{row[6]}->{row[7]}', flush=True)
     del st
 csvp = f'{R}/esteira_{ROLO}.csv'
 novo = not os.path.exists(csvp)

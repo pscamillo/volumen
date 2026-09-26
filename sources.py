@@ -16,7 +16,7 @@ meta.json), about 520 kB in total. Fetching one when the person opens it is
 instant. The ink maps are the heavy part: 2.8 GB for 672 files, so those stay
 on demand, one at a time, never in bulk.
 
-SCOPE. Only the 23 volumes eligible for the First Letters prize, plus the one
+SCOPE. Only the volumes eligible for the First Letters prize, plus the one
 scroll that has been read. This is a viewer for that set, not a general tool.
 
 Run a check:
