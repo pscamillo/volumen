@@ -283,14 +283,14 @@ class Splash(QWidget):
 
 # ----------------------------------------------------------------- intro --
 INTRO = [
-    "The whole loop, in one place, for the scrolls eligible for the Vesuvius Challenge's "
+    "The whole loop, in one place, for the scrolls open to the Vesuvius Challenge's "
     "<a href='https://scrollprize.org/prizes' style='color:#e8a33d; text-decoration:none'>First Letters prize</a>: "
-    "make surfaces with the minimal route, gate them, check the cuts, and "
-    "look for writing.",
+    "open the published surfaces or make new ones with the minimal route, "
+    "check that each stays on one sheet, and look for writing.",
 
-    "Surfaces are fitted, never traced by hand. For that, and much more, "
+    "Volumen fits surfaces but never traces them by hand. For that, and much more, "
     "there is <a href='https://github.com/ScrollPrize/villa/tree/main/volume-cartographer' style='color:#e8a33d; text-decoration:none'>VC3D</a>, the Vesuvius Challenge's own "
-    "tool — any surface here can be exported to it as a ready-made project.",
+    "tool — its patches open here, and any surface here exports to it as a ready-made project.",
 ]
 
 def _version() -> str:

@@ -1,8 +1,9 @@
 # Volumen
 
-The whole loop, in one place, for the Herculaneum scrolls eligible for the
-[First Letters prize][prize]: make surfaces, check that each one stays on a
-single sheet, look for writing, and keep a record of every judgement.
+The whole loop, in one place, for the Herculaneum scrolls open to the
+[First Letters prize][prize]: open the published surfaces or make new ones,
+check that each stays on a single sheet, look for writing, and keep a record of
+every judgement.
 
 ![The surface view](docs/screens/surface.png)
 

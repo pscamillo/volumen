@@ -1,6 +1,6 @@
 [project]
 name = "volumen"
-version = "0.1.0"
+version = "1.0.0"
 description = "The whole loop, in one place, for the Herculaneum scrolls: make surfaces, flatten, cut, judge."
 readme = "README.md"
 license = { text = "MIT" }
