@@ -15,6 +15,10 @@ It opens with 340 surfaces from eight eligible scrolls ready to read
 them. Surfaces you make with the pipeline, or grow in [VC3D][vc3d], join them
 in the same lists.
 
+## Three minutes of it
+
+https://github.com/user-attachments/assets/f6eb559d-7e16-42ad-8b76-69f4e5fc3949
+
 ## Run it
 
 Install [uv][uv] once, then:
