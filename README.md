@@ -185,8 +185,7 @@ Changes take effect on the next start.
 
 ## Data and credits
 
-Designed and directed by Paulo Sergio Camillo (pscamillo); implemented with
-Claude. The surfaces come from the [vesuvius-eligible-meshes][meshes] package.
+By Paulo Sergio Camillo (pscamillo), with Claude. The surfaces come from the [vesuvius-eligible-meshes][meshes] package.
 The scans, lasagna, tracks, ink model, VC3D and the minimal route with its
 spiral fitter are the Vesuvius Challenge team's open data and code (CC BY-NC
 4.0), in [villa][villa]; the fitter runs here from the fork of Iyán Dopico

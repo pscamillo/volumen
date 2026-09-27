@@ -1232,7 +1232,7 @@ class ExplorePage(QWidget):
         self._flat_fx.setOpacity(1.0)
         self.progress.setRange(0, 0)
         self.progress.show()
-        self.status.setText("Reading the CT along the mesh — a few minutes…")
+        self.status.setText("Reading the CT along the mesh — about half a minute…")
         self.flatter = flat.FlatWorker(v.unit, self.cache)
         self.flatter.sig.done.connect(self.flat_done)
         self.flatter.sig.failed.connect(self.flat_failed)

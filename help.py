@@ -30,7 +30,7 @@ def a(url: str, text: str) -> str:
 GROUPS = [
     ('The loop', [
         ('What this is for',
-         'Volumen runs one loop: make surfaces from a scroll, check that each sits on a single sheet, look for writing on those that do, and keep a record of every judgement. Everything but making surfaces runs on any computer — uv brings its own Python. The surfaces here from the start are the 340 of ' + a(MESHES, 'vesuvius-eligible-meshes') + ', published by the author for eight eligible scrolls with the same minimal route this app runs; they are fitted, not verified, and the checks below apply to them as to any other. Volumen fits surfaces but never traces or edits them — that is ' + a(VC3D, 'VC3D') + ', and any surface here exports to it as a ready-made project.'),
+         'Volumen runs one loop: get surfaces, check that each sits on a single sheet, look for writing on those that do, and keep a record of every judgement. Surfaces come three ways: the 340 of ' + a(MESHES, 'vesuvius-eligible-meshes') + ' are here from the start, published by the author for eight eligible scrolls with the same minimal route this app runs; <b>Make surfaces</b> fits new ones, on Linux with an NVIDIA GPU; and <b>Folders</b> brings in your own, grown in VC3D or from any tifxyz folder. None comes verified, and the checks below apply to every one. Everything but making surfaces runs on any computer — uv brings its own Python. Volumen fits surfaces but never traces or edits them — that is ' + a(VC3D, 'VC3D') + ', and any surface here exports to it as a ready-made project.'),
         ('Why judge',
          'A scroll has hundreds of surfaces. The ones you mark as sound are the short list you come back to; one judged sound with nothing on it you will not open again. Verdicts stay on this machine.'),
     ]),
@@ -40,7 +40,7 @@ GROUPS = [
         ('The surface list',
          "One row per surface: window, wrap, area, the package's own verdict on its shape, and yours. Rest the pointer on a row to preview its ink map — for choosing what to open, never for judging."),
         ('The surface view',
-         'The buttons at the top right are the layers: <i>Surface · CT</i>, <i>Ink · forward</i> and <i>reverse</i>, and <i>Cut 1–3</i> once cuts exist. The bar is 1 mm and the dashed square the size of a letter, at the current zoom. Three rows record what you see, in the order to judge them — Surface · CT, Sheet · cuts, Ink — and only the row for the open layer can be judged; <i>i</i> over the CT opens surface and ink together. Amber lines warn when a verdict does not rest on what was opened. A package surface first needs <b>Make flattened view</b>, which reads the CT along the mesh as vc_render_tifxyz would, without VC3D. <b>Make cut</b> takes about fifteen seconds.'),
+         'The buttons at the top right are the layers: <i>Surface · CT</i>, <i>Ink · forward</i> and <i>reverse</i>, and <i>Cut 1–3</i> once cuts exist. The bar is 1 mm and the dashed square the size of a letter, at the current zoom. Three rows record what you see, in the order to judge them — Surface · CT, Sheet · cuts, Ink — and only the row for the open layer can be judged; <i>i</i> over the CT opens surface and ink together. With a cut open, the sheet row becomes <i>This cut</i>: follows one sheet, crosses sheets, can’t tell, with an optional note. Amber lines warn when a verdict does not rest on what was opened. A package surface first needs <b>Make flattened view</b>, which reads the CT along the mesh as vc_render_tifxyz would, without VC3D. <b>Make cut</b> takes about fifteen seconds.'),
         ('Open in VC3D',
          'Builds a project for VC3D in <code>~/Volumen exports/</code> and lists the steps left, with buttons to copy the folder path and the volume URL.'),
         ('Make surfaces',
@@ -62,7 +62,7 @@ GROUPS = [
         ('A surface, step by step',
          'Look at the flattened CT first, not the ink. <b>1. Surface:</b> can you follow fibres, horizontals crossing verticals? Clean weave is good; in parts, partial; swirls, blocks or diagonal fibre, poor; nothing readable, unreadable. <b>2. Sheet:</b> make the cuts and label each (below). <b>3. Ink</b>, last, only on surfaces that passed both: zoom until the dashed square is large and look for organisation — marks in rows, regularly spaced, letter-sized. Most maps at 9 µm show nothing; <i>nothing but texture</i> is a real answer.'),
         ('The failure to watch for',
-         'The worst failure of every unwrapping method: the surface crosses to the next winding, and ink there may belong to the neighbouring sheet. The usual checks miss it, because the surface is still inside the scroll. It was seen here on a 0125 surface on 21/09, and the cut is the test that caught it. Marking a surface as having shapes of letters makes the app cut it on its own.'),
+         'The worst failure of every unwrapping method: the surface crosses to the next winding, and ink there may belong to the neighbouring sheet. The usual checks miss it, because the surface is still inside the scroll. It was seen here on a 0125 surface on 21 Sep 2026, and the cut is the test that caught it. Marking a surface as having shapes of letters makes the app cut it on its own.'),
         ('Labelling a cut',
          "A cut is one slice of the raw CT with the surface drawn across it in amber; the grey layers are the sheets. Zoom until they separate, follow the line end to end, and ask: does it sit on a bright layer, not in a dark gap? Does it stay on the same one — count the layers to a landmark near each end? Where it bends, do the layers bend with it? <i>Follows one sheet</i> only if all three hold along the whole line. If it leaves its layer anywhere, it <i>crosses sheets</i> — note where, since ink away from that stretch may still be sound. <i>Can't tell</i> is for layers too merged to follow over much of the line. On an inner wrap the same winding may cross a cut twice; judge each line against its own layer. The three cuts cross different parts of a surface, and each label is about its own."),
     ]),
@@ -78,7 +78,7 @@ GROUPS = [
         ('Progress',
          'One strip per scroll along its height, a block per window tried: filled as its surfaces are judged, a teal band once one passed the gate, an amber edge where letters are suspected, hatched where the fit found no winding. The strip shows where the work is — usually, that most of a scroll is untouched.'),
         ('Your records',
-         'Verdicts: <code>~/.local/share/volumen/my-findings.jsonl</code>. Cut labels: <code>~/.local/share/volumen/cut_labels.jsonl</code>. Those two are worth backing up; everything else (cuts, flattened views, meshes and ink maps in <code>~/.cache/volumen/</code>, exports in <code>~/Volumen exports/</code>) can be made again.'),
+         '<code>~</code> is your home folder (<code>C:\\Users\\&lt;you&gt;</code> on Windows). Verdicts: <code>~/.local/share/volumen/my-findings.jsonl</code>. Cut labels: <code>~/.local/share/volumen/cut_labels.jsonl</code>. Those two are worth backing up; everything else (cuts, flattened views, meshes and ink maps in <code>~/.cache/volumen/</code>, exports in <code>~/Volumen exports/</code>) can be made again.'),
     ]),
     ("If you do find letters", [
         ("Before anything else",
@@ -91,8 +91,8 @@ GROUPS = [
     ]),
     ("Credits", [
         ("Who made this",
-         "Designed and directed by Paulo Sergio Camillo (pscamillo); "
-         "implemented with Claude. Code under the MIT licence, at "
+         "By Paulo Sergio Camillo (pscamillo), with Claude. "
+         "Code under the MIT licence, at "
          f"{a('https://github.com/pscamillo/volumen', 'github.com/pscamillo/volumen')}. "
          "The surfaces come from "
          f"{a('https://github.com/pscamillo/vesuvius-eligible-meshes', 'vesuvius-eligible-meshes')}; "
