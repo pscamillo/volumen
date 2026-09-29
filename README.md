@@ -189,7 +189,7 @@ Changes take effect on the next start.
 By Paulo Sergio Camillo (pscamillo), with Claude. The surfaces come from the [vesuvius-eligible-meshes][meshes] package.
 The scans, lasagna, tracks, ink model, VC3D and the minimal route with its
 spiral fitter are the Vesuvius Challenge team's open data and code (CC BY-NC
-4.0), in [villa][villa]; the fitter runs here from the fork of Iyán Dopico
+4.0), in [villa][villa]; the fitter runs here from the [fork of Iyán Dopico][iyan-fork]
 (IyanDopico), which carries his fix. Built on PySide6 (Qt), zarr and numpy. An independent project, not
 affiliated with the Scroll Prize. Code: MIT.
 
@@ -197,5 +197,6 @@ affiliated with the Scroll Prize. Code: MIT.
 [meshes]: https://github.com/pscamillo/vesuvius-eligible-meshes
 [vc3d]: https://github.com/ScrollPrize/villa/tree/main/volume-cartographer
 [villa]: https://github.com/ScrollPrize/villa
+[iyan-fork]: https://github.com/IyanDopico/villa
 [ink]: https://github.com/ScrollPrize/villa/tree/main/ink-detection
 [uv]: https://docs.astral.sh/uv/

@@ -99,7 +99,7 @@ GROUPS = [
          "the scans, lasagna, tracks, ink model, VC3D and the minimal route "
          "with its spiral fitter are the Vesuvius Challenge team's open data "
          f"and code (CC BY-NC 4.0), in {a(VILLA, 'villa')}; the fitter runs "
-         "here from the fork of Iyán Dopico (IyanDopico), which carries his "
+         "here from the [fork of Iyán Dopico](https://github.com/IyanDopico/villa) (IyanDopico), which carries his "
          "fix. Built on PySide6 (Qt), zarr and numpy. An independent project, "
          "not affiliated with the Scroll Prize."),
     ]),
